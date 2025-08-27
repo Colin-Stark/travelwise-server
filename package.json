@@ -1,0 +1,29 @@
+{
+  "name": "travelwise_server",
+  "version": "1.0.0",
+  "description": "An express server for the travelwise application, it makes the API that connects to the database.",
+  "keywords": [
+    "MongoDB",
+    "JavaScript",
+    "Express",
+    "ORM"
+  ],
+  "homepage": "https://github.com/Colin-Stark/travelwise-server#readme",
+  "bugs": {
+    "url": "https://github.com/Colin-Stark/travelwise-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Colin-Stark/travelwise-server.git"
+  },
+  "license": "ISC",
+  "author": "COLLINS OLOKPEDJE",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
