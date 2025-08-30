@@ -8,6 +8,7 @@ const app = express();
  * ROUTES
  */
 const signupRouter = require('./routes/signup');
+const loginRouter = require('./routes/login');
 
 /**
  * MIDDLEWARES
@@ -32,6 +33,7 @@ app.post('/echo', (req, res) => {
  * ROUTES MIDDLEWARE
  */
 app.use('/signup', signupRouter);
+app.use('/login', loginRouter);
 
 
 const connectDB = async () => {
