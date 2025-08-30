@@ -24,8 +24,7 @@
     "start": "node --watch index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest",
-    "prepare": "husky"
+    "test": "jest"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
