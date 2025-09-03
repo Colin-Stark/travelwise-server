@@ -10,7 +10,14 @@ router.post('/', async (req, res) => {
         const { email, password, confirmPassword } = req.body;
 
         // Validate required fields
-        if (!email || !password || !confirmPassword) {
+        if (
+            typeof email !== 'string' ||
+            email.trim() === '' ||
+            !password ||
+            password.trim() === '' ||
+            !confirmPassword ||
+            confirmPassword.trim() === ''
+        ) {
             return res.status(400).json({
                 success: false,
                 message: 'Email, password, and confirm password are required'
@@ -22,7 +29,7 @@ router.post('/', async (req, res) => {
         if (!emailRegex.test(email)) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide a valid email address'
+                message: 'Invalid email address'
             });
         }
 
@@ -38,17 +45,11 @@ router.post('/', async (req, res) => {
         if (password.length < 8) {
             return res.status(400).json({
                 success: false,
-                message: 'Password must be at least 6 characters long'
+                message: 'Password must be at least 8 characters long'
             });
         }
 
-        /** Max password of 16 characters */
-        if (password.length > 16) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must be at most 16 characters long'
-            });
-        }
+
 
         // Check if user already exists
         const existingUser = await User.findOne({ email: email.toLowerCase() });

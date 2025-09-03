@@ -10,7 +10,12 @@ router.post('/', async (req, res) => {
         const { email, password } = req.body;
 
         // Validate required fields
-        if (!email || !password) {
+        if (
+            !email ||
+            !password ||
+            email.trim() === '' ||
+            password.trim() === ''
+        ) {
             return res.status(400).json({
                 success: false,
                 message: 'Email and password are required'

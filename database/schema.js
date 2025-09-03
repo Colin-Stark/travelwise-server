@@ -53,6 +53,8 @@ const userSchema = new mongoose.Schema({
     firstName: { type: String, required: false },
     lastName: { type: String, required: false },
     preferences: { type: preferencesSchema, default: {} },
+    otp: { type: Number, select: false },
+    otpexpirydate: { type: Date },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
