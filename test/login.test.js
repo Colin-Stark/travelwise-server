@@ -15,7 +15,7 @@ describe('POST /login', () => {
             .post('/login')
             .send({
                 email: 'collinscodes@gmail.com',
-                password: 'BackendDev'
+                password: 'MyshaylaAliyah'
             });
         expect(res.statusCode).toBe(200);
         expect(res.body.success).toBe(true);
