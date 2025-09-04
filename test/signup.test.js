@@ -13,9 +13,9 @@ describe('POST /signup (remote)', () => {
         const res = await request(baseUrl)
             .post('/signup')
             .send({
-                email: `xyz@gmail.com`,
-                password: 'password123',
-                confirmPassword: 'password123'
+                email: `collinscodes@gmail.com`,
+                password: 'BackendDev',
+                confirmPassword: 'BackendDev'
             });
         expect(res.statusCode).toBe(201);
         expect(res.body.success).toBe(true);
