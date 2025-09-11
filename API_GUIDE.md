@@ -9,12 +9,12 @@ This guide helps frontend developers interact with the Travelwise backend Expres
 **All API requests should use:**
 
 ```
-https://travelwise-server.vercel.app
+https://travelwise-server.onrender.com
 ```
 
 **Examples:**
-- Login: `https://travelwise-server.vercel.app/login`
-- Signup: `https://travelwise-server.vercel.app/signup`
+- Login: `https://travelwise-server.onrender.com/login`
+- Signup: `https://travelwise-server.onrender.com/signup`
 
 ---
 
@@ -22,7 +22,7 @@ https://travelwise-server.vercel.app
 
 ### 1. Signup
 
-**POST** `https://travelwise-server.vercel.app/signup`
+**POST** `https://travelwise-server.onrender.com/signup`
 
 **Description:** Register a new user.
 
@@ -60,7 +60,7 @@ https://travelwise-server.vercel.app
 
 ### 2. Login
 
-**POST** `https://travelwise-server.vercel.app/login`
+**POST** `https://travelwise-server.onrender.com/login`
 
 **Description:** Authenticate an existing user.
 
@@ -102,7 +102,7 @@ https://travelwise-server.vercel.app
 
 ### 3. Forgot Password
 
-**POST** `https://travelwise-server.vercel.app/login/forgot-password`
+**POST** `https://travelwise-server.onrender.com/login/forgot-password`
 
 **Description:** Request a password reset OTP.
 
@@ -138,7 +138,7 @@ https://travelwise-server.vercel.app
 
 ### 4. Reset Password
 
-**POST** `https://travelwise-server.vercel.app/login/reset-password`
+**POST** `https://travelwise-server.onrender.com/login/reset-password`
 
 **Description:** Reset password using OTP.
 

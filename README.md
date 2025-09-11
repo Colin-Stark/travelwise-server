@@ -55,7 +55,7 @@ TravelWise is a full-featured travel management platform that helps users plan t
 - **Password Hashing**: bcrypt
 - **Environment**: dotenv
 - **Linting**: ESLint
-- **Deployment**: Vercel (Serverless)
+- **Deployment**: Render
 
 ## 📋 Prerequisites
 
@@ -99,7 +99,7 @@ TravelWise is a full-featured travel management platform that helps users plan t
 
 ### Base URL
 ```
-http://localhost:3000
+https://travelwise-server.onrender.com/
 ```
 
 ### Authentication Endpoints
@@ -198,30 +198,27 @@ travelwise-server/
 │   └── ...                # Other route modules
 ├── index.js               # Main application entry point
 ├── package.json           # Dependencies and scripts
-├── vercel.json            # Vercel deployment config
+├── vercel.json            # Deployment config (legacy, now using Render)
 ├── eslint.config.mjs      # ESLint configuration
 └── README.md             # This file
 ```
 
 ## 🚀 Deployment
 
-### Vercel Deployment
+### Render Deployment
 
-1. **Install Vercel CLI**
-   ```bash
-   npm i -g vercel
-   ```
+1. **Connect your GitHub repository to Render**
+   - Go to [Render Dashboard](https://dashboard.render.com/)
+   - Create a new Web Service
+   - Connect your GitHub repo
 
-2. **Deploy**
-   ```bash
-   vercel
-   ```
+2. **Configure the service**
+   - Set build command: `npm install`
+   - Set start command: `npm start`
+   - Add environment variables: `MONGO_CONNECTION_STRING`, `JWT_SECRET`, `NODE_ENV=production`
 
-3. **Set Environment Variables**
-   In your Vercel dashboard, add:
-   - `MONGO_CONNECTION_STRING`
-   - `JWT_SECRET`
-   - `NODE_ENV=production`
+3. **Deploy**
+   - Render will automatically deploy on pushes to main branch
 
 ### Environment Variables
 
