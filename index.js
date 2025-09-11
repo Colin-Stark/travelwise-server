@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Travelwise API' });
 });
 
-app.post('/echo', (req, res) => {
+app.get('/echo', (req, res) => {
     res.json({ received: req.body });
 });
 
