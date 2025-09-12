@@ -118,21 +118,24 @@ router.post('/forgot-password', async (req, res) => {
         await user.save();
 
         /**
-         * Send OTP to user's email using Web3Forms API
+         * Send OTP to user's email using EmailJS API
          */
-        const WEB3_API_KEY = process.env.WEB3_API_KEY;
-        const WEB3_ENDPOINT = 'https://api.web3forms.com/submit';
+        const EMAILJS_SERVICE_ID = process.env.service_id;
+        const EMAILJS_TEMPLATE_ID = process.env.template_id;
+        const EMAILJS_PUBLIC_KEY = process.env.emailPublicKey;
+        const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send';
 
-        await fetch(WEB3_ENDPOINT, {
+        await fetch(EMAILJS_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                access_key: WEB3_API_KEY,
-                email: user.email,
-                replyto: 'collinscodes@gmail.com',
-                subject: 'Password Reset OTP - Travelwise',
-                from_name: 'Travelwise',
-                message: `Your OTP code is: ${otp}. It expires in 10 minutes.`
+                service_id: EMAILJS_SERVICE_ID,
+                template_id: EMAILJS_TEMPLATE_ID,
+                user_id: EMAILJS_PUBLIC_KEY,
+                template_params: {
+                    passcode: otp,
+                    email: user.email
+                }
             })
         });
 
