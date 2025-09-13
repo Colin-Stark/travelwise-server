@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
@@ -16,6 +17,7 @@ const userManagementRouter = require('./routes/userManagement');
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 
 const MONGO_URI = process.env.MONGO_CONNECTION_STRING;
