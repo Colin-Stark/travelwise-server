@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { User } = require('../../database/schema');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const router = express.Router();
@@ -118,25 +119,21 @@ router.post('/forgot-password', async (req, res) => {
         await user.save();
 
         /**
-         * Send OTP to user's email using EmailJS API
+         * Send OTP to user's email using Nodemailer
          */
-        const EMAILJS_SERVICE_ID = process.env.service_id;
-        const EMAILJS_TEMPLATE_ID = process.env.template_id;
-        const EMAILJS_PUBLIC_KEY = process.env.emailPublicKey;
-        const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send';
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
 
-        await fetch(EMAILJS_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                service_id: EMAILJS_SERVICE_ID,
-                template_id: EMAILJS_TEMPLATE_ID,
-                user_id: EMAILJS_PUBLIC_KEY,
-                template_params: {
-                    passcode: otp,
-                    email: user.email
-                }
-            })
+        await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: 'Password Reset OTP - Travelwise',
+            text: `Your OTP code is: ${otp}. It expires in 10 minutes.`,
         });
 
         return res.status(200).json({
@@ -148,7 +145,8 @@ router.post('/forgot-password', async (req, res) => {
         console.error('Forgot password error:', error);
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: 'Internal server error',
+            why: error.message
         });
     }
 });
