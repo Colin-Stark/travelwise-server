@@ -136,24 +136,22 @@ https://travelwise-server.onrender.com
 
 ---
 
-### 4. Reset Password
+### 4. Verify OTP
 
-**POST** `https://travelwise-server.onrender.com/login/reset-password`
+**POST** `https://travelwise-server.onrender.com/login/verify-otp`
 
-**Description:** Reset password using OTP.
+**Description:** Verify the OTP sent to the user's email.
 
 **Body Parameters:**
 - `email` (string, required)
 - `otp` (string, required)
-- `newPassword` (string, required)
-- `confirmPassword` (string, required)
 
 **Success Response:**
 - Status: `200 OK`
 ```json
 {
   "success": true,
-  "message": "Password reset successful"
+  "message": "OTP verified successfully"
 }
 ```
 
@@ -162,7 +160,7 @@ https://travelwise-server.onrender.com
 ```json
 {
   "success": false,
-  "message": "Email, OTP, new password, and confirm password are required"
+  "message": "Email and OTP are required"
 }
 ```
 - Status: `400 Bad Request` (invalid email format)
@@ -170,13 +168,6 @@ https://travelwise-server.onrender.com
 {
   "success": false,
   "message": "Please provide a valid email address"
-}
-```
-- Status: `400 Bad Request` (passwords do not match)
-```json
-{
-  "success": false,
-  "message": "Passwords do not match"
 }
 ```
 - Status: `400 Bad Request` (invalid OTP)
@@ -196,7 +187,59 @@ https://travelwise-server.onrender.com
 
 ---
 
-### 5. Delete User by Email
+### 5. Reset Password
+
+**POST** `https://travelwise-server.onrender.com/login/reset-password`
+
+**Description:** Reset password after OTP verification.
+
+**Body Parameters:**
+- `email` (string, required)
+- `newPassword` (string, required)
+- `confirmPassword` (string, required)
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "message": "Password reset successful"
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing fields)
+```json
+{
+  "success": false,
+  "message": "Email, new password, and confirm password are required"
+}
+```
+- Status: `400 Bad Request` (invalid email format)
+```json
+{
+  "success": false,
+  "message": "Please provide a valid email address"
+}
+```
+- Status: `400 Bad Request` (passwords do not match)
+```json
+{
+  "success": false,
+  "message": "Passwords do not match"
+}
+```
+- Status: `400 Bad Request` (password too short)
+```json
+{
+  "success": false,
+  "message": "Password must be at least 8 characters long"
+}
+```
+
+---
+
+### 6. Delete User by Email
 
 **DELETE** `https://travelwise-server.onrender.com/userManagement/delete-by-email`
 
