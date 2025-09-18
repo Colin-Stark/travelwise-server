@@ -153,26 +153,99 @@ router.post('/forgot-password', async (req, res) => {
 
 
 /**
- * Route to reset password
+ * Route to verify OTP
  */
-router.post('/reset-password', async (req, res) => {
+router.post('/verify-otp', async (req, res) => {
     try {
-        const { email, otp, newPassword, confirmPassword } = req.body;
+        const { email, otp } = req.body;
 
         // Validate required fields
         if (
             !email ||
             !otp ||
+            email.trim() === '' ||
+            otp.toString().trim() === ''
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and OTP are required'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid email address'
+            });
+        }
+
+        // Find user
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Check OTP expiry
+        if (!user.otpexpirydate || user.otpexpirydate < new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: 'OTP has expired'
+            });
+        }
+
+        // Compare OTP
+        const isOtpValid = await bcrypt.compare(otp.toString(), user.otp);
+        if (!isOtpValid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid OTP'
+            });
+        }
+
+        // Clear OTP fields
+        user.otp = undefined;
+        user.otpexpirydate = undefined;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'OTP verified successfully'
+        });
+
+    } catch (error) {
+        console.error('Verify OTP error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+
+/**
+ * Route to reset password
+ */
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email, newPassword, confirmPassword } = req.body;
+
+        // Validate required fields
+        if (
+            !email ||
             !newPassword ||
             !confirmPassword ||
             email.trim() === '' ||
-            otp.toString().trim() === '' ||
             newPassword.trim() === '' ||
             confirmPassword.trim() === ''
         ) {
             return res.status(400).json({
                 success: false,
-                message: 'Email, OTP, new password, and confirm password are required'
+                message: 'Email, new password, and confirm password are required'
             });
         }
 
@@ -210,30 +283,11 @@ router.post('/reset-password', async (req, res) => {
             });
         }
 
-        // Check OTP expiry
-        if (!user.otpexpirydate || user.otpexpirydate < new Date()) {
-            return res.status(400).json({
-                success: false,
-                message: 'OTP has expired'
-            });
-        }
-
-        // Compare OTP
-        const isOtpValid = await bcrypt.compare(otp.toString(), user.otp);
-        if (!isOtpValid) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid OTP'
-            });
-        }
-
         // Hash new password
         const newPasswordHash = await bcrypt.hash(newPassword, 12);
 
-        // Update password and clear OTP fields
+        // Update password
         user.passwordHash = newPasswordHash;
-        user.otp = undefined;
-        user.otpexpirydate = undefined;
         await user.save();
 
         return res.status(200).json({
