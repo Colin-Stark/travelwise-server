@@ -28,6 +28,11 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    env:
+      MONGO_CONNECTION_STRING: ${{ secrets.MONGO_CONNECTION_STRING }}
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      EMAIL: ${{ secrets.EMAIL }}
 
     steps:
     - name: Checkout code
