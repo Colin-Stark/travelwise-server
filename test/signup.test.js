@@ -2,20 +2,22 @@ const request = require('supertest');
 require('dotenv').config();
 
 const baseUrl = process.env.BASE_URL;
-// const baseUrl = process.env.LOCAL_URL;
-
+// const localUrl = process.env.LOCAL_URL;
 
 describe('POST /signup (remote)', () => {
+    let testEmail;  // Declare a variable for the unique email
+
+    beforeAll(() => {
+        testEmail = `testuser${Date.now()}@example.com`;  // Generate a unique email for the successful test
+    });
 
     afterAll(async () => {
         await request(baseUrl)
             .delete('/userManagement/delete-by-email')
             .send({
-                email: 'collinscodes@gmail.com'
+                email: testEmail  // Use the unique email for cleanup
             });
     });
-
-
 
     /**
      * Successful signup test case
@@ -24,7 +26,7 @@ describe('POST /signup (remote)', () => {
         const res = await request(baseUrl)
             .post('/signup')
             .send({
-                email: `collinscodes@gmail.com`,
+                email: testEmail,  // Use the unique email
                 password: 'BackendDev',
                 confirmPassword: 'BackendDev'
             });
