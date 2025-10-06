@@ -2,10 +2,32 @@ const request = require('supertest');
 
 require('dotenv').config();
 
-const baseUrl = process.env.LOCAL_URL;
+const baseUrl = process.env.BASE_URL;
 // const baseUrl = process.env.LOCAL_URL;
 
 describe('POST /login', () => {
+    beforeAll(async () => {
+        // Create a user for login tests to ensure it exists
+        await request(baseUrl)
+            .post('/signup')
+            .send({
+                email: 'collinscodes@gmail.com',
+                password: 'BackendDev',
+                confirmPassword: 'BackendDev'
+            });
+    });
+
+    afterAll(async () => {
+        // Clean up: delete the user created in beforeAll
+        await request(baseUrl)
+            .delete('/userManagement/delete-by-email')
+            .send({
+                email: 'collinscodes@gmail.com'
+            });
+    });
+
+
+
     /**
      * Successful login test case
      * (Assumes user already exists, adjust email/password as needed)
@@ -15,7 +37,7 @@ describe('POST /login', () => {
             .post('/login')
             .send({
                 email: 'collinscodes@gmail.com',
-                password: 'MyshaylaAliyah'
+                password: 'BackendDev'
             });
         expect(res.statusCode).toBe(200);
         expect(res.body.success).toBe(true);

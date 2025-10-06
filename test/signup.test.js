@@ -1,15 +1,26 @@
 const request = require('supertest');
 require('dotenv').config();
 
-const baseUrl = process.env.LOCAL_URL;
+const baseUrl = process.env.BASE_URL;
 // const baseUrl = process.env.LOCAL_URL;
 
 
 describe('POST /signup (remote)', () => {
+
+    afterAll(async () => {
+        await request(baseUrl)
+            .delete('/userManagement/delete-by-email')
+            .send({
+                email: 'collinscodes@gmail.com'
+            });
+    });
+
+
+
     /**
      * Successful signup test case
      */
-    it.skip('should create a user with valid data', async () => {
+    it('should create a user with valid data', async () => {
         const res = await request(baseUrl)
             .post('/signup')
             .send({
