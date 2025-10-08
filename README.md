@@ -99,7 +99,7 @@ TravelWise is a full-featured travel management platform that helps users plan t
 
 ### Base URL
 ```
-https://travelwise-server.onrender.com/
+https://travelwise-server.vercel.app/
 ```
 
 ### Authentication Endpoints
@@ -198,27 +198,27 @@ travelwise-server/
 │   └── ...                # Other route modules
 ├── index.js               # Main application entry point
 ├── package.json           # Dependencies and scripts
-├── vercel.json            # Deployment config (legacy, now using Render)
+├── vercel.json            # Deployment config
 ├── eslint.config.mjs      # ESLint configuration
 └── README.md             # This file
 ```
 
 ## 🚀 Deployment
 
-### Render Deployment
+### Vercel Deployment
 
-1. **Connect your GitHub repository to Render**
-   - Go to [Render Dashboard](https://dashboard.render.com/)
-   - Create a new Web Service
+1. **Connect your GitHub repository to Vercel**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Create a new project
    - Connect your GitHub repo
 
-2. **Configure the service**
+2. **Configure the project**
    - Set build command: `npm install`
    - Set start command: `npm start`
    - Add environment variables: `MONGO_CONNECTION_STRING`, `JWT_SECRET`, `NODE_ENV=production`
 
 3. **Deploy**
-   - Render will automatically deploy on pushes to main branch
+   - Vercel will automatically deploy on pushes to main branch
 
 ### Environment Variables
 

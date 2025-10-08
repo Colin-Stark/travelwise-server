@@ -9,12 +9,12 @@ This guide helps frontend developers interact with the Travelwise backend Expres
 **All API requests should use:**
 
 ```
-https://travelwise-server.onrender.com
+https://travelwise-server.vercel.app
 ```
 
 **Examples:**
-- Login: `https://travelwise-server.onrender.com/login`
-- Signup: `https://travelwise-server.onrender.com/signup`
+- Login: `https://travelwise-server.vercel.app/login`
+- Signup: `https://travelwise-server.vercel.app/signup`
 
 ---
 
@@ -22,7 +22,7 @@ https://travelwise-server.onrender.com
 
 ### 1. Signup
 
-**POST** `https://travelwise-server.onrender.com/signup`
+**POST** `https://travelwise-server.vercel.app/signup`
 
 **Description:** Register a new user.
 
@@ -60,7 +60,7 @@ https://travelwise-server.onrender.com
 
 ### 2. Login
 
-**POST** `https://travelwise-server.onrender.com/login`
+**POST** `https://travelwise-server.vercel.app/login`
 
 **Description:** Authenticate an existing user.
 
@@ -102,7 +102,7 @@ https://travelwise-server.onrender.com
 
 ### 3. Forgot Password
 
-**POST** `https://travelwise-server.onrender.com/login/forgot-password`
+**POST** `https://travelwise-server.vercel.app/login/forgot-password`
 
 **Description:** Request a password reset OTP.
 
@@ -138,7 +138,7 @@ https://travelwise-server.onrender.com
 
 ### 4. Verify OTP
 
-**POST** `https://travelwise-server.onrender.com/login/verify-otp`
+**POST** `https://travelwise-server.vercel.app/login/verify-otp`
 
 **Description:** Verify the OTP sent to the user's email.
 
@@ -189,7 +189,7 @@ https://travelwise-server.onrender.com
 
 ### 5. Reset Password
 
-**POST** `https://travelwise-server.onrender.com/login/reset-password`
+**POST** `https://travelwise-server.vercel.app/login/reset-password`
 
 **Description:** Reset password after OTP verification.
 
@@ -241,7 +241,7 @@ https://travelwise-server.onrender.com
 
 ### 6. Delete User by Email
 
-**DELETE** `https://travelwise-server.onrender.com/userManagement/delete-by-email`
+**DELETE** `https://travelwise-server.vercel.app/userManagement/delete-by-email`
 
 **Description:** Delete a user account by email address.
 
@@ -258,6 +258,68 @@ https://travelwise-server.onrender.com
     "id": "user._id",
     "email": "user.email",
     "deletedAt": "2025-09-11T12:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "message": "Email is required"
+}
+```
+- Status: `400 Bad Request` (invalid email format)
+```json
+{
+  "success": false,
+  "message": "Please provide a valid email address"
+}
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+- Status: `500 Internal Server Error` (server error)
+```json
+{
+  "success": false,
+  "message": "Internal server error"
+}
+```
+
+---
+
+### 7. Get User by Email
+
+**GET** `https://travelwise-server.vercel.app/userManagement/get-by-email`
+
+**Description:** Retrieve user information by email address.
+
+**Query Parameters:**
+- `email` (string, required)
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "user": {
+    "id": "user._id",
+    "email": "user.email",
+    "firstName": "user.firstName",
+    "lastName": "user.lastName",
+    "phone": "user.phone",
+    "preferences": {
+      "currency": "user.preferences.currency",
+      "language": "user.preferences.language",
+      "timezone": "user.preferences.timezone",
+      "marketingOptIn": "user.preferences.marketingOptIn"
+    }
   }
 }
 ```
