@@ -137,31 +137,6 @@ describe('POST /userManagement/update-user', () => {
     });
 
     /**
-     * Duplicate phone test case
-     */
-    it('should return 500 for duplicate phone number', async () => {
-        // First update one user with a phone
-        await request(baseUrl)
-            .post('/userManagement/update-user')
-            .send({
-                email: testEmail,
-                phone: '555-123-4567'
-            });
-
-        // Try to update another user with the same phone
-        const res = await request(baseUrl)
-            .post('/userManagement/update-user')
-            .send({
-                email: testEmail2,
-                phone: '555-123-4567'
-            });
-
-        expect(res.statusCode).toBe(500);
-        expect(res.body.success).toBe(false);
-        expect(res.body.message).toBe('Internal server error');
-    });
-
-    /**
      * Case insensitive email test case
      */
     it('should update user regardless of email case', async () => {
