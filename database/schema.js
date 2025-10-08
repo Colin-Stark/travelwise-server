@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema({
     passwordHash: { type: String, required: true },
     firstName: { type: String, required: false },
     lastName: { type: String, required: false },
+    phone: { type: String, required: false, unique: true },
     preferences: { type: preferencesSchema, default: {} },
     otp: { type: String, required: false },
     otpexpirydate: { type: Date },
