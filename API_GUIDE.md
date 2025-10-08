@@ -356,6 +356,77 @@ https://travelwise-server.vercel.app
 
 ---
 
+### 8. Update User
+
+**POST** `https://travelwise-server.vercel.app/userManagement/update-user`
+
+**Description:** Update user information by email address.
+
+**Body Parameters:**
+- `email` (string, required)
+- `firstName` (string, optional)
+- `lastName` (string, optional)
+- `phone` (string, optional)
+- `preferences` (object, optional)
+  - `currency` (string)
+  - `language` (string)
+  - `timezone` (string)
+  - `marketingOptIn` (boolean)
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "message": "User updated successfully",
+  "user": {
+    "id": "user._id",
+    "email": "user.email",
+    "firstName": "user.firstName",
+    "lastName": "user.lastName",
+    "phone": "user.phone",
+    "preferences": {
+      "currency": "user.preferences.currency",
+      "language": "user.preferences.language",
+      "timezone": "user.preferences.timezone",
+      "marketingOptIn": "user.preferences.marketingOptIn"
+    }
+  }
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "message": "Email is required"
+}
+```
+- Status: `400 Bad Request` (invalid email format)
+```json
+{
+  "success": false,
+  "message": "Please provide a valid email address"
+}
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+- Status: `500 Internal Server Error` (server error, including duplicate phone)
+```json
+{
+  "success": false,
+  "message": "Internal server error"
+}
+```
+
+---
+
 ## General Error Handling
 
 - If you send a request to a route that does **not exist** (e.g., `/login/forgot-passoword` with a typo), you will receive an HTML error page:
