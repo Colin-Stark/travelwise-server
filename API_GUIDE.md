@@ -56,6 +56,27 @@ https://travelwise-server.vercel.app
 }
 ```
 
+**JavaScript Example:**
+```javascript
+async function signup(email, password, confirmPassword) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password, confirmPassword })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Signup error:', error);
+  }
+}
+
+// Usage: await signup('user@example.com', 'password123', 'password123');
+```
+
 ---
 
 ### 2. Login
@@ -98,6 +119,27 @@ https://travelwise-server.vercel.app
 }
 ```
 
+**JavaScript Example:**
+```javascript
+async function login(email, password) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Login error:', error);
+  }
+}
+
+// Usage: await login('user@example.com', 'password123');
+```
+
 ---
 
 ### 3. Forgot Password
@@ -132,6 +174,27 @@ https://travelwise-server.vercel.app
   "success": false,
   "message": "Please provide a valid email address"
 }
+```
+
+**JavaScript Example:**
+```javascript
+async function forgotPassword(email) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/login/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Forgot password error:', error);
+  }
+}
+
+// Usage: await forgotPassword('user@example.com');
 ```
 
 ---
@@ -185,6 +248,27 @@ https://travelwise-server.vercel.app
 }
 ```
 
+**JavaScript Example:**
+```javascript
+async function verifyOTP(email, otp) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/login/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, otp })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+  }
+}
+
+// Usage: await verifyOTP('user@example.com', '123456');
+```
+
 ---
 
 ### 5. Reset Password
@@ -235,6 +319,27 @@ https://travelwise-server.vercel.app
   "success": false,
   "message": "Password must be at least 8 characters long"
 }
+```
+
+**JavaScript Example:**
+```javascript
+async function resetPassword(email, newPassword, confirmPassword) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/login/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, newPassword, confirmPassword })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Reset password error:', error);
+  }
+}
+
+// Usage: await resetPassword('user@example.com', 'newpassword123', 'newpassword123');
 ```
 
 ---
@@ -290,6 +395,27 @@ https://travelwise-server.vercel.app
   "success": false,
   "message": "Internal server error"
 }
+```
+
+**JavaScript Example:**
+```javascript
+async function deleteUserByEmail(email) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/userManagement/delete-by-email', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Delete user error:', error);
+  }
+}
+
+// Usage: await deleteUserByEmail('user@example.com');
 ```
 
 ---
@@ -352,6 +478,27 @@ https://travelwise-server.vercel.app
   "success": false,
   "message": "Internal server error"
 }
+```
+
+**JavaScript Example:**
+```javascript
+async function getUserByEmail(email) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/userManagement/get-by-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Get user error:', error);
+  }
+}
+
+// Usage: await getUserByEmail('user@example.com');
 ```
 
 ---
@@ -423,6 +570,30 @@ https://travelwise-server.vercel.app
   "success": false,
   "message": "Internal server error"
 }
+```
+
+**JavaScript Example:**
+```javascript
+async function updateUser(email, updates) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/userManagement/update-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, ...updates })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Update user error:', error);
+  }
+}
+
+// Usage examples:
+// Update name: await updateUser('user@example.com', { firstName: 'John', lastName: 'Doe' });
+// Update phone: await updateUser('user@example.com', { phone: '123-456-7890' });
+// Update preferences: await updateUser('user@example.com', { preferences: { currency: 'USD', language: 'en' } });
 ```
 
 ---
