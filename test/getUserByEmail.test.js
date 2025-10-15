@@ -33,8 +33,8 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should return user data for valid existing email', async () => {
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: testEmail });
+            .post('/userManagement/get-by-email')
+            .send({ email: testEmail });
 
         expect(res.statusCode).toBe(200);
         expect(res.body.success).toBe(true);
@@ -50,8 +50,8 @@ describe('GET /userManagement/get-by-email', () => {
     it('should return 404 if user does not exist', async () => {
         const nonExistentEmail = `nonexistent${Date.now()}@example.com`;
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: nonExistentEmail });
+            .post('/userManagement/get-by-email')
+            .send({ email: nonExistentEmail });
 
         expect(res.statusCode).toBe(404);
         expect(res.body.success).toBe(false);
@@ -63,8 +63,8 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should return 400 for invalid email format', async () => {
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: 'invalid-email' });
+            .post('/userManagement/get-by-email')
+            .send({ email: 'invalid-email' });
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
@@ -76,7 +76,7 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should return 400 if email is missing', async () => {
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email');
+            .post('/userManagement/get-by-email');
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
@@ -89,8 +89,8 @@ describe('GET /userManagement/get-by-email', () => {
     it('should return user data regardless of email case', async () => {
         const upperCaseEmail = testEmail.toUpperCase();
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: upperCaseEmail });
+            .post('/userManagement/get-by-email')
+            .send({ email: upperCaseEmail });
 
         expect(res.statusCode).toBe(200);
         expect(res.body.success).toBe(true);
@@ -102,8 +102,8 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should return 400 for empty email', async () => {
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: '' });
+            .post('/userManagement/get-by-email')
+            .send({ email: '' });
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);

@@ -296,11 +296,11 @@ https://travelwise-server.vercel.app
 
 ### 7. Get User by Email
 
-**GET** `https://travelwise-server.vercel.app/userManagement/get-by-email`
+**POST** `https://travelwise-server.vercel.app/userManagement/get-by-email`
 
 **Description:** Retrieve user information by email address.
 
-**Query Parameters:**
+**Body Parameters:**
 - `email` (string, required)
 
 **Success Response:**

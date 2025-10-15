@@ -65,9 +65,9 @@ router.delete('/delete-by-email', async (req, res) => {
  * 
  * // Get user by email
  */
-router.get('/get-by-email', async (req, res) => {
+router.post('/get-by-email', async (req, res) => {
     try {
-        const { email } = req.query;
+        const { email } = req.body;
 
         if (!email) {
             return res.status(400).json({
