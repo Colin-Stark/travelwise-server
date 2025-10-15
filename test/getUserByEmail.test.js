@@ -4,7 +4,7 @@ require('dotenv').config();
 const baseUrl = process.env.BASE_URL;
 // const baseUrl = process.env.LOCAL_URL;
 
-describe('GET /userManagement/get-by-email', () => {
+describe('POST /userManagement/get-by-email', () => {
     let testEmail;
 
     beforeAll(async () => {
@@ -76,7 +76,8 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should return 400 if email is missing', async () => {
         const res = await request(baseUrl)
-            .post('/userManagement/get-by-email');
+            .post('/userManagement/get-by-email')
+            .send({});
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
@@ -115,8 +116,8 @@ describe('GET /userManagement/get-by-email', () => {
      */
     it('should handle email with spaces (invalid format)', async () => {
         const res = await request(baseUrl)
-            .get('/userManagement/get-by-email')
-            .query({ email: ' test@example.com ' });
+            .post('/userManagement/get-by-email')
+            .send({ email: ' test@example.com ' });
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
