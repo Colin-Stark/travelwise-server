@@ -1,0 +1,275 @@
+const express = require('express');
+const { UserItinerary, User } = require('../../database/schema');
+
+const router = express.Router();
+
+// GET /itinerary - Get all itineraries for a user
+router.get('/', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const itineraries = await UserItinerary.find({ user_id: user._id });
+
+        res.status(200).json({
+            success: true,
+            data: itineraries
+        });
+
+    } catch (error) {
+        console.error('Error fetching itineraries:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// POST /itinerary - Create a new itinerary
+router.post('/', async (req, res) => {
+    try {
+        const { email, title, start_date, end_date, country, city, description, img, flight, schedules } = req.body;
+
+        if (!email || !title || !start_date || !end_date || !country || !city) {
+            const details = [];
+            if (!email) details.push("Email is required");
+            if (!title) details.push("Title is required");
+            if (!start_date) details.push("Start date is required");
+            if (!end_date) details.push("End date is required");
+            if (!country) details.push("Country is required");
+            if (!city) details.push("City is required");
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details
+            });
+        }
+
+        // Validate dates
+        const start = new Date(start_date);
+        const end = new Date(end_date);
+        if (start >= end) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["End date must be after start date"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const newItinerary = new UserItinerary({
+            user_id: user._id,
+            id: Date.now(),
+            title,
+            start_date,
+            end_date,
+            country,
+            city,
+            description,
+            img,
+            flight,
+            schedules
+        });
+
+        await newItinerary.save();
+
+        res.status(201).json({
+            success: true,
+            data: newItinerary
+        });
+
+    } catch (error) {
+        console.error('Error creating itinerary:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// GET /itinerary/:id - Get a specific itinerary
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const itinerary = await UserItinerary.findOne({ _id: id, user_id: user._id });
+
+        if (!itinerary) {
+            return res.status(404).json({
+                success: false,
+                error: 'Itinerary not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: itinerary
+        });
+
+    } catch (error) {
+        console.error('Error fetching itinerary:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// PUT /itinerary/:id - Update an itinerary
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, title, start_date, end_date, country, city, description, img, flight, schedules } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        // Validate dates if provided
+        if (start_date && end_date) {
+            const start = new Date(start_date);
+            const end = new Date(end_date);
+            if (start >= end) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Validation failed",
+                    details: ["End date must be after start date"]
+                });
+            }
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const updatedItinerary = await UserItinerary.findOneAndUpdate(
+            { _id: id, user_id: user._id },
+            {
+                title,
+                start_date,
+                end_date,
+                country,
+                city,
+                description,
+                img,
+                flight,
+                schedules,
+                updatedAt: new Date()
+            },
+            { new: true }
+        );
+
+        if (!updatedItinerary) {
+            return res.status(404).json({
+                success: false,
+                error: 'Itinerary not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: updatedItinerary
+        });
+
+    } catch (error) {
+        console.error('Error updating itinerary:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// DELETE /itinerary/:id - Delete an itinerary
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const deletedItinerary = await UserItinerary.findOneAndDelete({ _id: id, user_id: user._id });
+
+        if (!deletedItinerary) {
+            return res.status(404).json({
+                success: false,
+                error: 'Itinerary not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Itinerary deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error deleting itinerary:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+module.exports = router;

@@ -1,4 +1,8 @@
 /node_modules
 coverage/
-
+.specify/
+.vscode/
 .env
+dist/
+build/
+*.log

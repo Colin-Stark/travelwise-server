@@ -590,10 +590,415 @@ async function updateUser(email, updates) {
   }
 }
 
-// Usage examples:
-// Update name: await updateUser('user@example.com', { firstName: 'John', lastName: 'Doe' });
-// Update phone: await updateUser('user@example.com', { phone: '123-456-7890' });
 // Update preferences: await updateUser('user@example.com', { preferences: { currency: 'USD', language: 'en' } });
+```
+
+---
+
+### 9. Create Itinerary
+
+**POST** `https://travelwise-server.vercel.app/api/itineraries`
+
+**Description:** Create a new itinerary for the authenticated user.
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+- `title` (string, required) - Itinerary title
+- `start_date` (string, required) - Start date in YYYY-MM-DD format
+- `end_date` (string, required) - End date in YYYY-MM-DD format
+- `country` (string, required) - Destination country
+- `city` (string, required) - Destination city
+- `description` (string, optional) - Itinerary description
+- `img` (string, optional) - Image URL
+- `flight` (object, optional) - Flight booking details
+  - `departure_token` (string)
+- `schedules` (array, optional) - Daily schedules
+  - `day` (string) - Schedule date in YYYY-MM-DD format
+  - `locations` (array) - Locations for the day
+    - `data_id` (string) - Unique location identifier
+    - `title` (string, required) - Location name
+    - `place_id` (string, optional) - Google Places ID
+    - `rating` (number, optional) - Location rating
+    - `reviews` (number, optional) - Review count
+    - `type` (string, optional) - Location type
+    - `address` (string, optional) - Full address
+    - `open_state` (string, optional) - Opening hours
+    - `description` (string, optional) - Location description
+    - `service_options` (object, optional) - Service options
+    - `user_review` (string, optional) - User's review
+    - `thumbnail` (string, optional) - Thumbnail URL
+    - `serpapi_thumbnail` (string, optional) - SerpAPI thumbnail
+    - `time` (string, optional) - Scheduled time
+    - `duration` (number, optional) - Duration in minutes
+
+**Success Response:**
+- Status: `201 Created`
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "itinerary_id",
+    "id": 1234567890123,
+    "user_id": "user_id",
+    "title": "Paris Adventure",
+    "start_date": "2025-11-10T00:00:00.000Z",
+    "end_date": "2025-11-18T00:00:00.000Z",
+    "country": "France",
+    "city": "Paris",
+    "description": "Explore the Eiffel Tower, Louvre, and enjoy French cuisine.",
+    "img": "/images/placeholder1.jpg",
+    "flight": {
+      "departure_token": "token_string"
+    },
+    "schedules": [
+      {
+        "day": "2025-11-10T00:00:00.000Z",
+        "locations": [
+          {
+            "data_id": "c1esdf",
+            "title": "Eiffel Tower",
+            "place_id": "ChIJLU7jZClu5kcR4PcOOO6p3I0",
+            "rating": 4.7,
+            "reviews": 475344,
+            "type": "Tourist attraction",
+            "address": "Av. Gustave Eiffel, 75007 Paris, France",
+            "open_state": "Closes soon ⋅ 11 PM ⋅ Opens 9:30 AM Mon",
+            "description": "Landmark 330m-high 19th-century tower.",
+            "service_options": { "onsite_services": true },
+            "user_review": "Quiet crowded with tourist.",
+            "thumbnail": "https://lh3.googleusercontent.com/...",
+            "serpapi_thumbnail": "https://serpapi.com/...",
+            "time": "8:30 AM",
+            "duration": 90
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-11T00:00:00.000Z",
+    "updatedAt": "2025-11-11T00:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing required fields)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required", "Title is required"]
+}
+```
+- Status: `400 Bad Request` (invalid dates)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["End date must be after start date"]
+}
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function createItinerary(email, itineraryData) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/api/itineraries', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, ...itineraryData })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Create itinerary error:', error);
+  }
+}
+
+// Usage: await createItinerary('user@example.com', { title: 'Paris Trip', start_date: '2025-11-10', end_date: '2025-11-18', country: 'France', city: 'Paris' });
+```
+
+---
+
+### 10. Get User Itineraries
+
+**GET** `https://travelwise-server.vercel.app/api/itineraries`
+
+**Description:** Retrieve all itineraries for the authenticated user.
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "itinerary_id",
+      "id": 1234567890123,
+      "user_id": "user_id",
+      "title": "Paris Adventure",
+      "start_date": "2025-11-10T00:00:00.000Z",
+      "end_date": "2025-11-18T00:00:00.000Z",
+      "country": "France",
+      "city": "Paris",
+      "description": "Explore the Eiffel Tower...",
+      "img": "/images/placeholder1.jpg",
+      "flight": { "departure_token": "token" },
+      "schedules": [...],
+      "createdAt": "2025-11-11T00:00:00.000Z",
+      "updatedAt": "2025-11-11T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required"]
+}
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function getItineraries(email) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/api/itineraries', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Get itineraries error:', error);
+  }
+}
+
+// Usage: await getItineraries('user@example.com');
+```
+
+---
+
+### 11. Get Specific Itinerary
+
+**GET** `https://travelwise-server.vercel.app/api/itineraries/:id`
+
+**Description:** Retrieve a specific itinerary by ID for the authenticated user.
+
+**URL Parameters:**
+- `id` (string, required) - Itinerary ID
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "itinerary_id",
+    "id": 1234567890123,
+    "user_id": "user_id",
+    "title": "Paris Adventure",
+    // ... full itinerary object
+  }
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required"]
+}
+```
+- Status: `404 Not Found` (user or itinerary not found)
+```json
+{
+  "success": false,
+  "error": "Itinerary not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function getItinerary(email, itineraryId) {
+  try {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Get itinerary error:', error);
+  }
+}
+
+// Usage: await getItinerary('user@example.com', 'itinerary_id');
+```
+
+---
+
+### 12. Update Itinerary
+
+**PUT** `https://travelwise-server.vercel.app/api/itineraries/:id`
+
+**Description:** Update an existing itinerary for the authenticated user.
+
+**URL Parameters:**
+- `id` (string, required) - Itinerary ID
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+- `title` (string, optional) - Updated title
+- `start_date` (string, optional) - Updated start date
+- `end_date` (string, optional) - Updated end date
+- `country` (string, optional) - Updated country
+- `city` (string, optional) - Updated city
+- `description` (string, optional) - Updated description
+- `img` (string, optional) - Updated image URL
+- `flight` (object, optional) - Updated flight details
+- `schedules` (array, optional) - Updated schedules
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "data": {
+    // updated itinerary object
+  }
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email or invalid dates)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required"]
+}
+```
+- Status: `404 Not Found` (user or itinerary not found)
+```json
+{
+  "success": false,
+  "error": "Itinerary not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function updateItinerary(email, itineraryId, updates) {
+  try {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, ...updates })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Update itinerary error:', error);
+  }
+}
+
+// Usage: await updateItinerary('user@example.com', 'itinerary_id', { description: 'Updated description' });
+```
+
+---
+
+### 13. Delete Itinerary
+
+**DELETE** `https://travelwise-server.vercel.app/api/itineraries/:id`
+
+**Description:** Delete an itinerary for the authenticated user.
+
+**URL Parameters:**
+- `id` (string, required) - Itinerary ID
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "message": "Itinerary deleted successfully"
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required"]
+}
+```
+- Status: `404 Not Found` (user or itinerary not found)
+```json
+{
+  "success": false,
+  "error": "Itinerary not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function deleteItinerary(email, itineraryId) {
+  try {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Delete itinerary error:', error);
+  }
+}
+
+// Usage: await deleteItinerary('user@example.com', 'itinerary_id');
 ```
 
 ---
