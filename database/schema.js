@@ -46,6 +46,53 @@ const emergencyContactSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+// Itinerary Schemas
+const scheduleLocationSchema = new mongoose.Schema({
+    data_id: { type: String },
+    title: { type: String, required: true },
+    place_id: { type: String },
+    rating: { type: Number },
+    reviews: { type: Number },
+    type: { type: String },
+    address: { type: String },
+    open_state: { type: String },
+    description: { type: String },
+    service_options: {
+        onsite_services: { type: Boolean }
+    },
+    user_review: { type: String },
+    thumbnail: { type: String },
+    serpapi_thumbnail: { type: String },
+    time: { type: String },
+    duration: { type: Number }
+});
+
+const scheduleSchema = new mongoose.Schema({
+    day: { type: Date, required: true },
+    locations: [scheduleLocationSchema]
+});
+
+const flightSchema = new mongoose.Schema({
+    departure_token: { type: String }
+});
+
+const userItinerarySchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    id: { type: Number, unique: true },
+    gl: { type: String },
+    title: { type: String, required: true },
+    start_date: { type: Date, required: true },
+    end_date: { type: Date, required: true },
+    country: { type: String, required: true },
+    city: { type: String, required: true },
+    description: { type: String },
+    img: { type: String },
+    flight: flightSchema,
+    schedules: [scheduleSchema],
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 // Main Schemas
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, lowercase: true },
@@ -156,6 +203,9 @@ businessSchema.index({ name: 'text', tags: 'text' });
 // Emergency Contact Index
 emergencyContactSchema.index({ userId: 1 });
 
+// User Itinerary Index
+userItinerarySchema.index({ user_id: 1 });
+
 // Models
 const User = mongoose.model('User', userSchema);
 const Trip = mongoose.model('Trip', tripSchema);
@@ -167,6 +217,7 @@ const Booking = mongoose.model('Booking', bookingSchema);
 const Business = mongoose.model('Business', businessSchema);
 const SavedBusiness = mongoose.model('SavedBusiness', savedBusinessSchema);
 const EmergencyContact = mongoose.model('EmergencyContact', emergencyContactSchema);
+const UserItinerary = mongoose.models.UserItinerary || mongoose.model('UserItinerary', userItinerarySchema);
 
 // Export models
 module.exports = {
@@ -179,5 +230,6 @@ module.exports = {
     Booking,
     Business,
     SavedBusiness,
-    EmergencyContact
+    EmergencyContact,
+    UserItinerary
 };

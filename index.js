@@ -10,6 +10,7 @@ const app = express();
 const signupRouter = require('./routes/signup');
 const loginRouter = require('./routes/login');
 const userManagementRouter = require('./routes/userManagement');
+const itineraryRouter = require('./routes/itinerary');
 
 /**
  * MIDDLEWARES
@@ -36,6 +37,7 @@ app.get('/echo', (req, res) => {
 app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/userManagement', userManagementRouter);
+app.use('/api/itineraries', itineraryRouter);
 
 
 const connectDB = async () => {
