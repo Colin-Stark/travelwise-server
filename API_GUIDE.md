@@ -622,6 +622,7 @@ async function updateUser(email, updates) {
     - `serpapi_thumbnail` (string, optional) - SerpAPI thumbnail
     - `time` (string, optional) - Scheduled time
     - `duration` (number, optional) - Duration in minutes
+- `gl` (string, optional) - Geographic location code (e.g., 'jp' for Japan)
 
 **Success Response:**
 - Status: `201 Created`
@@ -632,6 +633,7 @@ async function updateUser(email, updates) {
     "_id": "itinerary_id",
     "id": 1234567890123,
     "user_id": "user_id",
+    "gl": "jp",
     "title": "Paris Adventure",
     "start_date": "2025-11-10T00:00:00.000Z",
     "end_date": "2025-11-18T00:00:00.000Z",
@@ -715,14 +717,14 @@ async function createItinerary(email, itineraryData) {
   }
 }
 
-// Usage: await createItinerary('user@example.com', { title: 'Paris Trip', start_date: '2025-11-10', end_date: '2025-11-18', country: 'France', city: 'Paris' });
+// Usage: await createItinerary('user@example.com', { title: 'Paris Trip', start_date: '2025-11-10', end_date: '2025-11-18', country: 'France', city: 'Paris', gl: 'fr' });
 ```
 
 ---
 
-### 10. Get User Itineraries
+### 10. List User Itineraries
 
-**GET** `http://localhost:3000/api/itineraries`
+**POST** `https://travelwise-server.vercel.app/api/itineraries/list`
 
 **Description:** Retrieve all itineraries for the authenticated user.
 
@@ -739,6 +741,7 @@ async function createItinerary(email, itineraryData) {
       "_id": "itinerary_id",
       "id": 1234567890123,
       "user_id": "user_id",
+      "gl": "jp",
       "title": "Paris Adventure",
       "start_date": "2025-11-10T00:00:00.000Z",
       "end_date": "2025-11-18T00:00:00.000Z",
@@ -774,10 +777,10 @@ async function createItinerary(email, itineraryData) {
 
 **JavaScript Example:**
 ```javascript
-async function getItineraries(email) {
+async function listItineraries(email) {
   try {
-    const response = await fetch('https://travelwise-server.vercel.app/api/itineraries', {
-      method: 'GET',
+    const response = await fetch('https://travelwise-server.vercel.app/api/itineraries/list', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -786,18 +789,18 @@ async function getItineraries(email) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Get itineraries error:', error);
+    console.error('List itineraries error:', error);
   }
 }
 
-// Usage: await getItineraries('user@example.com');
+// Usage: await listItineraries('user@example.com');
 ```
 
 ---
 
 ### 11. Get Specific Itinerary
 
-**GET** `http://localhost:3000/api/itineraries/:id`
+**POST** `https://travelwise-server.vercel.app/api/itineraries/get/:id`
 
 **Description:** Retrieve a specific itinerary by ID for the authenticated user.
 
@@ -816,6 +819,7 @@ async function getItineraries(email) {
     "_id": "itinerary_id",
     "id": 1234567890123,
     "user_id": "user_id",
+    "gl": "jp",
     "title": "Paris Adventure",
     // ... full itinerary object
   }
@@ -843,8 +847,8 @@ async function getItineraries(email) {
 ```javascript
 async function getItinerary(email, itineraryId) {
   try {
-    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
-      method: 'GET',
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/get/${itineraryId}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -864,7 +868,7 @@ async function getItinerary(email, itineraryId) {
 
 ### 12. Update Itinerary
 
-**PUT** `http://localhost:3000/api/itineraries/:id`
+**POST** `https://travelwise-server.vercel.app/api/itineraries/update/:id`
 
 **Description:** Update an existing itinerary for the authenticated user.
 
@@ -882,6 +886,7 @@ async function getItinerary(email, itineraryId) {
 - `img` (string, optional) - Updated image URL
 - `flight` (object, optional) - Updated flight details
 - `schedules` (array, optional) - Updated schedules
+- `gl` (string, optional) - Updated geographic location code
 
 **Success Response:**
 - Status: `200 OK`
@@ -915,8 +920,8 @@ async function getItinerary(email, itineraryId) {
 ```javascript
 async function updateItinerary(email, itineraryId, updates) {
   try {
-    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
-      method: 'PUT',
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/update/${itineraryId}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -929,14 +934,14 @@ async function updateItinerary(email, itineraryId, updates) {
   }
 }
 
-// Usage: await updateItinerary('user@example.com', 'itinerary_id', { description: 'Updated description' });
+// Usage: await updateItinerary('user@example.com', 'itinerary_id', { description: 'Updated description', gl: 'us' });
 ```
 
 ---
 
 ### 13. Delete Itinerary
 
-**DELETE** `http://localhost:3000/api/itineraries/:id`
+**POST** `https://travelwise-server.vercel.app/api/itineraries/delete/:id`
 
 **Description:** Delete an itinerary for the authenticated user.
 
@@ -976,8 +981,8 @@ async function updateItinerary(email, itineraryId, updates) {
 ```javascript
 async function deleteItinerary(email, itineraryId) {
   try {
-    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/${itineraryId}`, {
-      method: 'DELETE',
+    const response = await fetch(`https://travelwise-server.vercel.app/api/itineraries/delete/${itineraryId}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },

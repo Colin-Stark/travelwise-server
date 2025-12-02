@@ -3,43 +3,6 @@ const { UserItinerary, User } = require('../../database/schema');
 
 const router = express.Router();
 
-// GET /itinerary - Get all itineraries for a user
-router.get('/', async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                error: "Validation failed",
-                details: ["Email is required"]
-            });
-        }
-
-        const user = await User.findOne({ email: email.toLowerCase() });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
-
-        const itineraries = await UserItinerary.find({ user_id: user._id });
-
-        res.status(200).json({
-            success: true,
-            data: itineraries
-        });
-
-    } catch (error) {
-        console.error('Error fetching itineraries:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
-    }
-});
-
 // POST /itinerary/list - POST-only retrieval for listing itineraries
 router.post('/list', async (req, res) => {
     try {
@@ -80,7 +43,7 @@ router.post('/list', async (req, res) => {
 // POST /itinerary - Create a new itinerary
 router.post('/', async (req, res) => {
     try {
-        const { email, title, start_date, end_date, country, city, description, img, flight, schedules } = req.body;
+        const { email, title, start_date, end_date, country, city, description, img, flight, schedules, gl } = req.body;
 
         if (!email || !title || !start_date || !end_date || !country || !city) {
             const details = [];
@@ -119,6 +82,7 @@ router.post('/', async (req, res) => {
         const newItinerary = new UserItinerary({
             user_id: user._id,
             id: Date.now(),
+            gl,
             title,
             start_date,
             end_date,
@@ -195,7 +159,7 @@ router.post('/get/:id', async (req, res) => {
 router.post('/update/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { email, title, start_date, end_date, country, city, description, img, flight, schedules } = req.body;
+        const { email, title, start_date, end_date, country, city, description, img, flight, schedules, gl } = req.body;
 
         if (!email) {
             return res.status(400).json({
@@ -229,6 +193,7 @@ router.post('/update/:id', async (req, res) => {
         const updatedItinerary = await UserItinerary.findOneAndUpdate(
             { _id: id, user_id: user._id },
             {
+                gl,
                 title,
                 start_date,
                 end_date,
