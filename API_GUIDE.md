@@ -65,30 +65,125 @@ async function signup(email, password, confirmPassword) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password, confirmPassword })
     });
     const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Signup error:', error);
+### 14. Add Flight to Trip
+
+
+**Description:** Add flight booking details to a trip belonging to a user.
+
+**URL Parameters:**
+- `tripId` (string, required) - Trip ID
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication (or `userId` may be provided as an alternative)
+- `userId` (string, optional) - User's ObjectId as an alternative to `email` for API requests (useful for debugging or automated scripts)
+- `departure_date` (string, required) - Departure date (YYYY-MM-DD)
+- `return_date` (string, required) - Return date (YYYY-MM-DD)
+- `departure_country` (string, required)
+- `departure_city` (string, required)
+- `arrival_country` (string, required)
+- `arrival_city` (string, required)
+- `departure_token` (string, optional)
+- `price` (number, required)
+- `status` (string, optional, default 'booked')
+
+**Success Response:**
+- Status: `201 Created`
+```json
+{
+  "success": true,
+  "data": {
+    "user_id": "user_id",
+    "departure_date": "2025-12-01T00:00:00.000Z",
+    "return_date": "2025-12-05T00:00:00.000Z",
+    "departure_country": "Canada",
+    "departure_city": "Toronto",
+    "arrival_country": "France",
+    "arrival_city": "Paris",
+    "departure_token": "token123",
+    "price": 500,
+    "status": "booked",
+    "createdAt": "2025-11-11T00:00:00.000Z",
+    "updatedAt": "2025-11-11T00:00:00.000Z"
   }
 }
+```
+**Error Responses:**
+- Status: `400 Bad Request` (validation failure)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["departure_date is required"]
+  "error": "Trip not found"
+}
 
-// Usage: await signup('user@example.com', 'password123', 'password123');
+**JavaScript Example:**
+```javascript
+async function addFlightToTrip(tripId, email, flightData) {
+  try {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/trips/${tripId}/flights`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, ...flightData })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Add flight error', error);
+  }
+}
 ```
 
+**Using userId instead of email (PowerShell example):**
+```powershell
+Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/trips/<tripId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
+```
 ---
+
+### List Flights for Trip
+
+**POST** `https://travelwise-server.vercel.app/api/trips/:tripId/flights/list`
+
+**Description:** Retrieve the list of flights for a trip belonging to a user.
+
+**URL Parameters:**
+- `tripId` (string, required) - Trip ID
+
+- `email` (string, required unless `userId` provided) - User's email for ownership verification
+- `userId` (string, optional) - Alternative to `email` (ObjectId of user)
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+}
+```
+async function listFlights(tripId, email) {
+  try {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('List flights error', error);
+  }
+}
+```
+
+**Using userId in PowerShell:**
+```powershell
+Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/trips/<tripId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
+
 
 ### 2. Login
 
 **POST** `https://travelwise-server.vercel.app/login`
 
 **Description:** Authenticate an existing user.
-
-**Body Parameters:**
 - `email` (string, required)
 - `password` (string, required)
-
 **Success Response:**
 - Status: `200 OK`
 ```json

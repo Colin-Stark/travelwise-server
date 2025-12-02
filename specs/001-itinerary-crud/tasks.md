@@ -129,6 +129,18 @@ description: "Task list template for feature implementation"
 - [ ] T028 Performance optimization for itinerary queries in database/schema.js
 - [ ] T029 Add logging for itinerary operations in routes/itinerary/index.js
 
+## Phase 8: Trip Flights (new feature)
+
+**Purpose**: Support adding flight records to a Trip's `flights` array and ensure validation/ownership checks.
+
+- [ ] T030 [P] [TRIP] Add `flightDetailSchema` to `database/schema.js` and add `flights` array to `tripSchema`
+- [ ] T031 [P] [TRIP] Contract test for POST /api/trips/:tripId/flights in `test/trip-contract.test.js`
+- [ ] T032 [P] [TRIP] Integration test for adding flight in `test/trip-integration.test.js`
+- [ ] T033 [TRIP] Implement POST /api/trips/:tripId/flights endpoint in `routes/trip/index.js`
+- [ ] T034 [TRIP] Add validation logic for flight payload and ownership checks in `routes/trip/index.js`
+- [ ] T035 [TRIP] Update `API_GUIDE.md` and `quickstart.md` with flight endpoint examples
+- [ ] T036 [TRIP] Add indexes for `flights.user_id` in `database/schema.js` and run optimization
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
