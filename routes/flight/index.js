@@ -66,6 +66,43 @@ router.post('/', async (req, res) => {
     }
 });
 
+// POST /api/flights/list - List all flights for a user by email
+router.post('/list', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const flights = await Flight.find({ userId: user._id });
+
+        res.status(200).json({
+            success: true,
+            data: flights
+        });
+
+    } catch (error) {
+        console.error('Error listing flights:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
 // POST /api/flights/:flightId/flights - Add a flight detail to a flight doc (mimics previous behavior)
 router.post('/:flightId/flights', async (req, res) => {
     try {

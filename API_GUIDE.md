@@ -6,15 +6,19 @@ This guide helps frontend developers interact with the Travelwise backend Expres
 
 ## Base URL
 
-**All API requests should use:**
-
+**For local development:**
 ```
 http://localhost:3000
 ```
 
+**For production:**
+```
+https://travelwise-server.vercel.app
+```
+
 **Examples:**
-- Login: `http://localhost:3000/login`
-- Signup: `http://localhost:3000/signup`
+- Signup: `https://travelwise-server.vercel.app/signup`
+- Login: `https://travelwise-server.vercel.app/login`
 
 ---
 
@@ -1086,6 +1090,95 @@ async function createFlight(email, flightData) {
 Invoke-RestMethod -Uri "http://localhost:3000/api/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"692f2f41ab593f49fd4db74a", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
 ```
 
+### 15. List Flights for User
+
+**POST** `https://travelwise-server.vercel.app/api/flights/list`
+
+**Description:** Retrieve all Flight documents for a user based on their email.
+
+**Body Parameters:**
+- `email` (string, required) - User's email for authentication
+
+**Success Response:**
+- Status: `200 OK`
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "flightId",
+      "userId": "userId",
+      "name": "Toronto to Paris",
+      "destination": {
+        "country": "France",
+        "city": "Paris"
+      },
+      "startDate": "2025-12-01T00:00:00.000Z",
+      "endDate": "2025-12-05T00:00:00.000Z",
+      "flights": [
+        {
+          "_id": "detailId",
+          "user_id": "userId",
+          "departure_date": "2025-12-01T00:00:00.000Z",
+          "return_date": "2025-12-05T00:00:00.000Z",
+          "departure_country": "Canada",
+          "departure_city": "Toronto",
+          "arrival_country": "France",
+          "arrival_city": "Paris",
+          "departure_token": "ABC123",
+          "price": 500,
+          "status": "booked",
+          "createdAt": "2025-12-02T18:45:05.375Z",
+          "updatedAt": "2025-12-02T18:45:05.375Z"
+        }
+      ],
+      "createdAt": "2025-12-02T18:45:05.375Z",
+      "updatedAt": "2025-12-02T18:45:05.375Z"
+    }
+  ]
+}
+```
+
+**Error Responses:**
+- Status: `400 Bad Request` (missing email)
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email is required"]
+}
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function listFlightsForUser(email) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/api/flights/list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('List flights error', error);
+  }
+}
+
+// Usage: await listFlightsForUser('jojus.stpeter@gmail.com');
+```
+
+**Using PowerShell:**
+```powershell
+Invoke-RestMethod -Uri 'https://travelwise-server.vercel.app/api/flights/list' -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{ "email": "jojus.stpeter@gmail.com" }'
+```
+
 #### Flight Schema (Flight.flights)
 
 Flights in the Flight model are embedded objects in the `flights` array on a `Flight` document: `flight.flights`.
@@ -1138,7 +1231,7 @@ Example Flight Object (response portion):
 
 ### List Flights for Flight
 
-**POST** `http://localhost:3000/api/flights/:flightId/flights/list`
+**POST** `https://travelwise-server.vercel.app/api/flights/:flightId/flights/list`
 
 **Description:** Retrieve the list of flight details for a Flight document belonging to a user.
 
@@ -1174,7 +1267,7 @@ Example Flight Object (response portion):
 ```
 async function listFlights(flightId, email) {
   try {
-    const response = await fetch(`http://localhost:3000/api/flights/${flightId}/flights/list`, {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/flights/${flightId}/flights/list`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -1188,7 +1281,7 @@ async function listFlights(flightId, email) {
 
 **Using userId in PowerShell:**
 ```powershell
-Invoke-RestMethod -Uri "http://localhost:3000/api/flights/<flightId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
+Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flightId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
 
 ---
 
