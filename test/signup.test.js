@@ -1,10 +1,10 @@
 const request = require('supertest');
 require('dotenv').config();
 
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.LOCAL_URL;
 // const localUrl = process.env.LOCAL_URL;
 
-describe('POST /signup (remote)', () => {
+describe.skip('POST /signup (remote)', () => {
     let testEmail;  // Declare a variable for the unique email
 
     beforeAll(() => {

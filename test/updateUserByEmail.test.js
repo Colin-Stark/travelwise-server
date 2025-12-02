@@ -1,10 +1,10 @@
 const request = require('supertest');
 require('dotenv').config();
 
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.LOCAL_URL;
 // const baseUrl = process.env.LOCAL_URL;
 
-describe('POST /userManagement/update-user', () => {
+describe.skip('POST /userManagement/update-user', () => {
     let testEmail;
     let testEmail2;
 

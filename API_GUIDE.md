@@ -9,12 +9,12 @@ This guide helps frontend developers interact with the Travelwise backend Expres
 **All API requests should use:**
 
 ```
-https://travelwise-server.vercel.app
+http://localhost:3000
 ```
 
 **Examples:**
-- Login: `https://travelwise-server.vercel.app/login`
-- Signup: `https://travelwise-server.vercel.app/signup`
+- Login: `http://localhost:3000/login`
+- Signup: `http://localhost:3000/signup`
 
 ---
 
@@ -22,7 +22,7 @@ https://travelwise-server.vercel.app
 
 ### 1. Signup
 
-**POST** `https://travelwise-server.vercel.app/signup`
+**POST** `http://localhost:3000/signup`
 
 **Description:** Register a new user.
 
@@ -72,7 +72,7 @@ async function signup(email, password, confirmPassword) {
 
 ### 2. Login
 
-**POST** `https://travelwise-server.vercel.app/login`
+**POST** `http://localhost:3000/login`
 
 **Description:** Authenticate an existing user.
 - `email` (string, required)
@@ -132,7 +132,7 @@ async function login(email, password) {
 
 ### 3. Forgot Password
 
-**POST** `https://travelwise-server.vercel.app/login/forgot-password`
+**POST** `http://localhost:3000/login/forgot-password`
 
 **Description:** Request a password reset OTP.
 
@@ -189,7 +189,7 @@ async function forgotPassword(email) {
 
 ### 4. Verify OTP
 
-**POST** `https://travelwise-server.vercel.app/login/verify-otp`
+**POST** `http://localhost:3000/login/verify-otp`
 
 **Description:** Verify the OTP sent to the user's email.
 
@@ -261,7 +261,7 @@ async function verifyOTP(email, otp) {
 
 ### 5. Reset Password
 
-**POST** `https://travelwise-server.vercel.app/login/reset-password`
+**POST** `http://localhost:3000/login/reset-password`
 
 **Description:** Reset password after OTP verification.
 
@@ -334,7 +334,7 @@ async function resetPassword(email, newPassword, confirmPassword) {
 
 ### 6. Delete User by Email
 
-**DELETE** `https://travelwise-server.vercel.app/userManagement/delete-by-email`
+**DELETE** `http://localhost:3000/userManagement/delete-by-email`
 
 **Description:** Delete a user account by email address.
 
@@ -410,7 +410,7 @@ async function deleteUserByEmail(email) {
 
 ### 7. Get User by Email
 
-**POST** `https://travelwise-server.vercel.app/userManagement/get-by-email`
+**POST** `http://localhost:3000/userManagement/get-by-email`
 
 **Description:** Retrieve user information by email address.
 
@@ -493,7 +493,7 @@ async function getUserByEmail(email) {
 
 ### 8. Update User
 
-**POST** `https://travelwise-server.vercel.app/userManagement/update-user`
+**POST** `http://localhost:3000/userManagement/update-user`
 
 **Description:** Update user information by email address.
 
@@ -585,7 +585,7 @@ async function updateUser(email, updates) {
 
 ### 9. Create Itinerary
 
-**POST** `https://travelwise-server.vercel.app/api/itineraries`
+**POST** `http://localhost:3000/api/itineraries`
 
 **Description:** Create a new itinerary for the authenticated user.
 
@@ -718,7 +718,7 @@ async function createItinerary(email, itineraryData) {
 
 ### 10. Get User Itineraries
 
-**GET** `https://travelwise-server.vercel.app/api/itineraries`
+**GET** `http://localhost:3000/api/itineraries`
 
 **Description:** Retrieve all itineraries for the authenticated user.
 
@@ -793,7 +793,7 @@ async function getItineraries(email) {
 
 ### 11. Get Specific Itinerary
 
-**GET** `https://travelwise-server.vercel.app/api/itineraries/:id`
+**GET** `http://localhost:3000/api/itineraries/:id`
 
 **Description:** Retrieve a specific itinerary by ID for the authenticated user.
 
@@ -860,7 +860,7 @@ async function getItinerary(email, itineraryId) {
 
 ### 12. Update Itinerary
 
-**PUT** `https://travelwise-server.vercel.app/api/itineraries/:id`
+**PUT** `http://localhost:3000/api/itineraries/:id`
 
 **Description:** Update an existing itinerary for the authenticated user.
 
@@ -932,7 +932,7 @@ async function updateItinerary(email, itineraryId, updates) {
 
 ### 13. Delete Itinerary
 
-**DELETE** `https://travelwise-server.vercel.app/api/itineraries/:id`
+**DELETE** `http://localhost:3000/api/itineraries/:id`
 
 **Description:** Delete an itinerary for the authenticated user.
 
@@ -1045,7 +1045,7 @@ async function deleteItinerary(email, itineraryId) {
 ```javascript
 async function addFlightToFlight(flightId, email, flightData) {
   try {
-    const response = await fetch(`https://travelwise-server.vercel.app/api/flights/${flightId}/flights`, {
+    const response = await fetch(`http://localhost:3000/api/flights/${flightId}/flights`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, ...flightData })
@@ -1059,7 +1059,7 @@ async function addFlightToFlight(flightId, email, flightData) {
 
 **Using userId instead of email (PowerShell example):**
 ```powershell
-Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flightId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
+Invoke-RestMethod -Uri "http://localhost:3000/api/flights/<flightId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
 ```
 
 #### Flight Schema (Flight.flights)
@@ -1131,7 +1131,7 @@ Example Flight Object (response portion):
 
 ### List Flights for Flight
 
-**POST** `https://travelwise-server.vercel.app/api/flights/:flightId/flights/list`
+**POST** `http://localhost:3000/api/flights/:flightId/flights/list`
 
 **Description:** Retrieve the list of flight details for a Flight document belonging to a user.
 
@@ -1162,7 +1162,7 @@ async function listFlights(flightId, email) {
 
 **Using userId in PowerShell:**
 ```powershell
-Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flightId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
+Invoke-RestMethod -Uri "http://localhost:3000/api/flights/<flightId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
 
 ---
 
