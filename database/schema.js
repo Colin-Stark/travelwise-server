@@ -107,6 +107,24 @@ const userSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+// ...existing code...
+
+// Flight Detail Schema (for Trip.flights)
+const flightDetailSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    departure_date: { type: Date, required: true },
+    return_date: { type: Date, required: true },
+    departure_country: { type: String, required: true },
+    departure_city: { type: String, required: true },
+    arrival_country: { type: String, required: true },
+    arrival_city: { type: String, required: true },
+    departure_token: { type: String },
+    price: { type: Number, required: true, min: 0 },
+    status: { type: String, enum: ['booked', 'pending', 'cancelled'], default: 'booked' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 const tripSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
@@ -115,6 +133,7 @@ const tripSchema = new mongoose.Schema({
     endDate: { type: Date, required: true },
     status: { type: String, enum: ['planned', 'active', 'completed', 'canceled'], default: 'planned' },
     tags: [{ type: String }],
+    flights: [flightDetailSchema],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
@@ -172,6 +191,8 @@ const bookingSchema = new mongoose.Schema({
     voucherUrl: { type: String }
 });
 
+// ...existing code...
+
 const businessSchema = new mongoose.Schema({
     name: { type: String, required: true },
     category: { type: String, enum: ['restaurant', 'attraction', 'shop', 'service'], required: true },
@@ -192,6 +213,7 @@ const savedBusinessSchema = new mongoose.Schema({
 // Indexes
 // userSchema.index({ email: 1 }); // Removed: unique: true already creates this index
 tripSchema.index({ userId: 1, startDate: 1 });
+tripSchema.index({ 'flights.user_id': 1 });
 itinerarySchema.index({ tripId: 1 });
 expenseSchema.index({ tripId: 1, date: 1 });
 expenseSchema.index({ userId: 1, date: 1 });
