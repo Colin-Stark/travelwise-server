@@ -989,17 +989,15 @@ async function deleteItinerary(email, itineraryId) {
 // Usage: await deleteItinerary('user@example.com', 'itinerary_id');
 ```
 
-### 14. Add Flight Detail to Flight document
+### 14. Create Flight
 
+**POST** `http://localhost:3000/api/flights`
 
-**Description:** Add flight booking details to a Flight document belonging to a user.
-
-**URL Parameters:**
-- `flightId` (string, required) - Flight ID
+**Description:** Create a new flight document directly with flight details (no separate container needed).
 
 **Body Parameters:**
-- `email` (string, required) - User's email for authentication (or `userId` may be provided as an alternative)
-- `userId` (string, optional) - User's ObjectId as an alternative to `email` for API requests (useful for debugging or automated scripts)
+- `email` (string, required unless `userId` provided) - User's email for authentication
+- `userId` (string, optional) - User's ObjectId as an alternative to `email`
 - `departure_date` (string, required) - Departure date (YYYY-MM-DD)
 - `return_date` (string, required) - Return date (YYYY-MM-DD)
 - `departure_country` (string, required)
@@ -1016,21 +1014,38 @@ async function deleteItinerary(email, itineraryId) {
 {
   "success": true,
   "data": {
-    "user_id": "user_id",
-    "departure_date": "2025-12-01T00:00:00.000Z",
-    "return_date": "2025-12-05T00:00:00.000Z",
-    "departure_country": "Canada",
-    "departure_city": "Toronto",
-    "arrival_country": "France",
-    "arrival_city": "Paris",
-    "departure_token": "token123",
-    "price": 500,
-    "status": "booked",
-    "createdAt": "2025-11-11T00:00:00.000Z",
-    "updatedAt": "2025-11-11T00:00:00.000Z"
+    "_id": "flightId",
+    "userId": "userId",
+    "name": "Toronto to Paris",
+    "destination": {
+      "country": "France",
+      "city": "Paris"
+    },
+    "startDate": "2025-12-01T00:00:00.000Z",
+    "endDate": "2025-12-05T00:00:00.000Z",
+    "flights": [
+      {
+        "_id": "detailId",
+        "user_id": "userId",
+        "departure_date": "2025-12-01T00:00:00.000Z",
+        "return_date": "2025-12-05T00:00:00.000Z",
+        "departure_country": "Canada",
+        "departure_city": "Toronto",
+        "arrival_country": "France",
+        "arrival_city": "Paris",
+        "departure_token": "ABC123",
+        "price": 500,
+        "status": "booked",
+        "createdAt": "2025-12-02T18:31:59.795Z",
+        "updatedAt": "2025-12-02T18:31:59.795Z"
+      }
+    ],
+    "createdAt": "2025-12-02T18:31:59.795Z",
+    "updatedAt": "2025-12-02T18:31:59.795Z"
   }
 }
 ```
+
 **Error Responses:**
 - Status: `400 Bad Request` (validation failure)
 ```json
@@ -1038,28 +1053,37 @@ async function deleteItinerary(email, itineraryId) {
   "success": false,
   "error": "Validation failed",
   "details": ["departure_date is required"]
-  "error": "Flight not found"
 }
+```
+- Status: `404 Not Found` (user not found)
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
 
 **JavaScript Example:**
 ```javascript
-async function addFlightToFlight(flightId, email, flightData) {
+async function createFlight(email, flightData) {
   try {
-    const response = await fetch(`http://localhost:3000/api/flights/${flightId}/flights`, {
+    const response = await fetch('http://localhost:3000/api/flights', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, ...flightData })
     });
     return await response.json();
   } catch (error) {
-    console.error('Add flight error', error);
+    console.error('Create flight error', error);
   }
 }
+
+// Usage: await createFlight('jojus.stpeter@gmail.com', { departure_date: '2025-12-01', return_date: '2025-12-05', departure_country: 'Canada', departure_city: 'Toronto', arrival_country: 'France', arrival_city: 'Paris', price: 500 });
 ```
 
 **Using userId instead of email (PowerShell example):**
 ```powershell
-Invoke-RestMethod -Uri "http://localhost:3000/api/flights/<flightId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
+Invoke-RestMethod -Uri "http://localhost:3000/api/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"692f2f41ab593f49fd4db74a", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
 ```
 
 #### Flight Schema (Flight.flights)
@@ -1112,23 +1136,6 @@ Example Flight Object (response portion):
 
 ---
 
-#### Functions & Usage Patterns
-
-1. Add Flight — `POST /api/flights/:flightId/flights` (already documented above)
--- Use this to attach a flight booking detail to a Flight document. It validates ownership (via `email` or `userId`) and writes a new flight object to the `flight.flights` array.
-
-2. List Flights — `POST /api/flights/:flightId/flights/list` (already documented above):
-- Returns an array of flight details for the Flight document (empty array if none).
-
-3. Update Flight — `POST /api/flights/:flightId/flights/update/:detailId` (already documented above):
-- Use to patch/update any subset of the flight fields except `user_id` (ownership must match). Ensure `departure_date` and `return_date` are still valid if updated.
-
-4. Delete Flight — `POST /api/flights/:flightId/flights/delete/:detailId` (already documented above):
--- Removes the flight embedded document from the `flight.flights` array (ownership check via `email` or `userId`).
-
----
----
-
 ### List Flights for Flight
 
 **POST** `http://localhost:3000/api/flights/:flightId/flights/list`
@@ -1145,10 +1152,29 @@ Example Flight Object (response portion):
 - Status: `200 OK`
 ```json
 {
+  "success": true,
+  "data": [
+    {
+      "_id": "detailId",
+      "user_id": "userId",
+      "departure_date": "2025-12-01T00:00:00.000Z",
+      "return_date": "2025-12-05T00:00:00.000Z",
+      "departure_country": "Canada",
+      "departure_city": "Toronto",
+      "arrival_country": "France",
+      "arrival_city": "Paris",
+      "departure_token": "ABC123",
+      "price": 500,
+      "status": "booked",
+      "createdAt": "2025-12-02T18:31:59.795Z",
+      "updatedAt": "2025-12-02T18:31:59.795Z"
+    }
+  ]
 }
 ```
 async function listFlights(flightId, email) {
   try {
+    const response = await fetch(`http://localhost:3000/api/flights/${flightId}/flights/list`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })

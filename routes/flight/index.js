@@ -11,27 +11,52 @@ async function getUserFromBody(body) {
     return null;
 }
 
-// POST /api/flights - Create a new flight (replacement for Trip create)
+// POST /api/flights - Create a new flight directly with details (no container needed)
 router.post('/', async (req, res) => {
     try {
-        const { email, name, destination, startDate, endDate } = req.body;
+        const { email, departure_date, return_date, departure_country, departure_city, arrival_country, arrival_city, departure_token, price, status } = req.body;
+
         const details = [];
         if (!email && !req.body.userId) details.push('Either email or userId is required');
-        if (!name) details.push('Name is required');
-        if (!destination || !destination.country || !destination.city) details.push('Destination country and city are required');
-        if (!startDate) details.push('startDate is required');
-        if (!endDate) details.push('endDate is required');
+        if (!departure_date) details.push('departure_date is required');
+        if (!return_date) details.push('return_date is required');
+        if (!departure_country) details.push('departure_country is required');
+        if (!departure_city) details.push('departure_city is required');
+        if (!arrival_country) details.push('arrival_country is required');
+        if (!arrival_city) details.push('arrival_city is required');
+        if (price === undefined || price === null) details.push('price is required');
         if (details.length) return res.status(400).json({ success: false, error: 'Validation failed', details });
+
+        const start = new Date(departure_date);
+        const end = new Date(return_date);
+        if (start >= end) return res.status(400).json({ success: false, error: 'Validation failed', details: ['return_date must be after departure_date'] });
+        if (price < 0) return res.status(400).json({ success: false, error: 'Validation failed', details: ['price must be >= 0'] });
 
         const user = await getUserFromBody(req.body);
         if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
+        const flightDetail = {
+            user_id: user._id,
+            departure_date: start,
+            return_date: end,
+            departure_country,
+            departure_city,
+            arrival_country,
+            arrival_city,
+            departure_token,
+            price,
+            status: status || 'booked',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
         const flight = new Flight({
             userId: user._id,
-            name,
-            destination: { country: destination.country, city: destination.city },
-            startDate: new Date(startDate),
-            endDate: new Date(endDate)
+            name: `${departure_city} to ${arrival_city}`, // Auto-generate name
+            destination: { country: arrival_country, city: arrival_city },
+            startDate: start,
+            endDate: end,
+            flights: [flightDetail] // Embed the detail directly
         });
         await flight.save();
         return res.status(201).json({ success: true, data: flight });
