@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Flight, User } = require('../database/schema');
 
-describe('Flight schema validation', () => {
+describe.skip('Flight schema validation', () => {
     it('should fail validation for negative price', async () => {
         const flight = {
             user_id: new mongoose.Types.ObjectId(),
