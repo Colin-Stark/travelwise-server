@@ -9,7 +9,7 @@
 ## 1. Overview
 
 ### 1.1 Purpose
-Define backend requirements, data model, interfaces, and constraints to support TravelWise features: user auth, trips & itineraries, expenses & budgets, bookings, recommendations, local businesses, and notifications.
+Define backend requirements, data model, interfaces, and constraints to support TravelWise features: user auth, flights & itineraries, expenses & budgets, bookings, recommendations, local businesses, and notifications.
 
 ### 1.2 Goals & Success Criteria
 - **G1**: Provide secure REST APIs for all core features.
@@ -36,7 +36,7 @@ Define backend requirements, data model, interfaces, and constraints to support 
 - **Security**: JWT access + refresh tokens, HTTPS, Helmet, rate limiting, input validation & sanitization, RBAC-ready.
 - **Privacy**: PII minimized; at-rest encryption for secrets; PHI not stored.
 - **Reliability**: Automated backups (MongoDB Atlas), replica sets, restore RTO ≤ 2h, RPO ≤ 15m.
-- **Performance**: Indexes for high-cardinality queries (userId, tripId, dates); caching layer optional.
+- **Performance**: Indexes for high-cardinality queries (userId, flightId, dates); caching layer optional.
 - **Scalability**: Stateless Express pods; horizontal auto-scaling; pagination standards.
 - **Observability**: Structured logs, request IDs, metrics (latency, error rates), traces; alerting SLOs.
 - **Portability**: REST over HTTP/JSON; OpenAPI spec; Postman collection.
@@ -56,7 +56,7 @@ flowchart LR
 
     subgraph Backend [TravelWise Backend (Node.js + Express)]
       AU[Auth & Users] 
-      TR[Trips & Itineraries]
+      TR[Flights & Itineraries]
       EX[Expenses & Budgets]
       BK[Bookings Integrations]
       RE[AI & Recommendations]
@@ -133,7 +133,7 @@ classDiagram
     boolean marketingOptIn
   }
 
-  class Trip {
+  class Flight {
     ObjectId _id
     ObjectId userId
     string name
@@ -157,14 +157,14 @@ classDiagram
 
   class Itinerary {
     ObjectId _id
-    ObjectId tripId
+    ObjectId flightId
     string title
     [ItineraryItem] items
     string notes
     Date createdAt
     Date updatedAt
     --
-    +index(tripId)
+    +index(flightId)
   }
 
   class ItineraryItem {
@@ -182,7 +182,7 @@ classDiagram
 
   class Expense {
     ObjectId _id
-    ObjectId tripId
+    ObjectId flightId
     ObjectId userId
     string category // food|transport|lodging|tickets|other
     double amount
@@ -194,13 +194,13 @@ classDiagram
     string notes
     Date createdAt
     --
-    +index(tripId, date)
+    +index(flightId, date)
     +index(userId, date)
   }
 
   class Budget {
     ObjectId _id
-    ObjectId tripId
+    ObjectId flightId
     double plannedTotal
     double alertThresholdPct
     double actualTotal // derived/denormalized
@@ -210,7 +210,7 @@ classDiagram
   class BudgetAlert {
     ObjectId _id
     ObjectId userId
-    ObjectId tripId
+    ObjectId flightId
     string type // overspend|warning|info
     string message
     double thresholdValue
@@ -222,7 +222,7 @@ classDiagram
 
   class Booking {
     ObjectId _id
-    ObjectId tripId
+    ObjectId flightId
     string type // flight|hotel|car|train|tour
     string provider
     double price
@@ -232,7 +232,7 @@ classDiagram
     object details // normalized subset of API response
     string voucherUrl
     --
-    +index(tripId, type)
+    +index(flightId, type)
   }
 
   class Business {
@@ -254,12 +254,12 @@ classDiagram
   class SavedBusiness {
     ObjectId _id
     ObjectId userId
-    ObjectId tripId
+    ObjectId flightId
     ObjectId businessId
     string note
     Date createdAt
     --
-    +unique(userId, tripId, businessId)
+    +unique(userId, flightId, businessId)
   }
 
   class Notification {
@@ -276,16 +276,16 @@ classDiagram
     +index(userId, scheduledAt)
   }
 
-  User "1" --> "many" Trip : owns
-  Trip "1" --> "many" Itinerary : has
+  User "1" --> "many" Flight : owns
+  Flight "1" --> "many" Itinerary : has
   Itinerary "1" --> "many" ItineraryItem : embeds
-  Trip "1" --> "many" Expense : has
-  Trip "1" --> "0..1" Budget : has
-  Trip "1" --> "many" Booking : has
+  Flight "1" --> "many" Expense : has
+  Flight "1" --> "0..1" Budget : has
+  Flight "1" --> "many" Booking : has
   User "1" --> "many" BudgetAlert : receives
   Business "1" --> "many" SavedBusiness : referenced by
   User "1" --> "many" SavedBusiness : saves
-  Trip "1" --> "many" SavedBusiness : contextual to
+  Flight "1" --> "many" SavedBusiness : contextual to
   User "1" --> "many" Notification : receives
 ```
 
@@ -293,17 +293,17 @@ classDiagram
 
 ## 5. Relationships (Summary)
 
-- **User → Trip**: 1:N
-- **Trip → Itinerary**: 1:N
+- **User → Flight**: 1:N
+- **Flight → Itinerary**: 1:N
 - **Itinerary → ItineraryItem**: 1:N (embedded array)
-- **Trip → Expense**: 1:N
-- **Trip → Budget**: 1:0..1
-- **Trip → Booking**: 1:N
+- **Flight → Expense**: 1:N
+- **Flight → Budget**: 1:0..1
+- **Flight → Booking**: 1:N
 - **User ↔ Business (via SavedBusiness)**: M:N
 - **User → BudgetAlert**: 1:N
 - **User → Notification**: 1:N
 
-> **Indexes**: userId, tripId, (tripId, date), (userId, date), (userId, startDate), text index for `Business.name,tags` (optional).
+> **Indexes**: userId, flightId, (flightId, date), (userId, date), (userId, startDate), text index for `Business.name,tags` (optional).
 
 ---
 
@@ -319,26 +319,26 @@ classDiagram
 - `PATCH /api/users/me` — update names, preferences
 - `DELETE /api/users/me` — close account (soft delete)
 
-### 6.2 Trips & Itineraries
-- `GET /api/trips` | `POST /api/trips` | `GET /api/trips/:id` | `PATCH /api/trips/:id` | `DELETE /api/trips/:id`
-- `GET /api/trips/:id/itineraries` | `POST /api/trips/:id/itineraries`
+### 6.2 Flights & Itineraries
+- `GET /api/flights` | `POST /api/flights` | `GET /api/flights/:id` | `PATCH /api/flights/:id` | `DELETE /api/flights/:id`
+- `GET /api/flights/:id/itineraries` | `POST /api/flights/:id/itineraries`
 - `PATCH /api/itineraries/:itineraryId` | `DELETE /api/itineraries/:itineraryId`
 
 ### 6.3 Expenses & Budgets
-- `GET /api/trips/:id/expenses` | `POST /api/trips/:id/expenses`
+- `GET /api/flights/:id/expenses` | `POST /api/flights/:id/expenses`
 - `PATCH /api/expenses/:expenseId` | `DELETE /api/expenses/:expenseId`
-- `GET /api/trips/:id/budget` | `PUT /api/trips/:id/budget`
-- `GET /api/trips/:id/expenses/summary?groupBy=category|date`
+- `GET /api/flights/:id/budget` | `PUT /api/flights/:id/budget`
+- `GET /api/flights/:id/expenses/summary?groupBy=category|date`
 
 ### 6.4 Bookings & Integrations
-- `POST /api/trips/:id/bookings/search` — proxy search
-- `POST /api/trips/:id/bookings` — save booking
-- `GET /api/trips/:id/bookings` | `DELETE /api/bookings/:bookingId`
+- `POST /api/flights/:id/bookings/search` — proxy search
+- `POST /api/flights/:id/bookings` — save booking
+- `GET /api/flights/:id/bookings` | `DELETE /api/bookings/:bookingId`
 
 ### 6.5 Local Businesses & Saved Lists
 - `GET /api/businesses/search?q=&near=`
-- `POST /api/trips/:id/saved-businesses`
-- `GET /api/trips/:id/saved-businesses`
+- `POST /api/flights/:id/saved-businesses`
+- `GET /api/flights/:id/saved-businesses`
 - `DELETE /api/saved-businesses/:id`
 
 ### 6.6 Notifications
@@ -360,7 +360,7 @@ classDiagram
 | preferences | object | currency, language, timezone |
 | createdAt, updatedAt | Date | ISO8601 |
 
-### 7.2 Trip
+### 7.2 Flight
 | Field | Type | Notes |
 |---|---|---|
 | _id | ObjectId | PK |
@@ -374,7 +374,7 @@ classDiagram
 | Field | Type | Notes |
 |---|---|---|
 | _id | ObjectId | PK |
-| tripId | ObjectId | FK → Trip |
+| flightId | ObjectId | FK → Flight |
 | userId | ObjectId | FK → User |
 | category | string | food/transport/lodging/tickets/other |
 | amount | number |  |
@@ -389,12 +389,12 @@ classDiagram
 
 ## 8. Key Flows (Sequence)
 
-### 8.1 Register & Create First Trip
+### 8.1 Register & Create First Flight
 ```mermaid
 sequenceDiagram
   participant U as User
   participant A as Auth API
-  participant T as Trips API
+  participant T as Flights API
   participant DB as MongoDB
 
   U->>A: POST /auth/register
@@ -402,10 +402,10 @@ sequenceDiagram
   DB-->>A: _id
   A-->>U: tokens
 
-  U->>T: POST /trips (Authorization: Bearer)
-  T->>DB: insert Trip (userId)
+  U->>T: POST /flights (Authorization: Bearer)
+  T->>DB: insert Flight (userId)
   DB-->>T: _id
-  T-->>U: Trip created
+  T-->>U: Flight created
 ```
 
 ### 8.2 Add Expense & Trigger Budget Alert
@@ -417,9 +417,9 @@ sequenceDiagram
   participant N as Notifications
   participant DB as MongoDB
 
-  U->>E: POST /trips/:id/expenses
+  U->>E: POST /flights/:id/expenses
   E->>DB: insert Expense
-  E->>B: checkBudget(tripId)
+  E->>B: checkBudget(flightId)
   B->>DB: read Budget, sum Expenses
   B-->>E: thresholdExceeded
   E->>N: enqueue Notification
@@ -435,7 +435,7 @@ sequenceDiagram
 |---|---|---|
 | 3rd-party API rate limits | Medium | Caching, retries with backoff, quota monitoring |
 | Token theft / auth bypass | High | Short-lived access tokens, refresh rotation, IP/device checks |
-| Query hotspots on tripId | Medium | Compound indexes, pagination, projections |
+| Query hotspots on flightId | Medium | Compound indexes, pagination, projections |
 | Cost spikes on storage | Medium | Lifecycle policies for receipts, compression |
 | Data loss | High | Atlas backups, restore drills, multi-region replicas |
 
@@ -444,7 +444,7 @@ sequenceDiagram
 ## 10. Milestones & Acceptance
 
 - **M1**: Auth & Users complete; Postman tests pass (sign-in, refresh).  
-- **M2**: Trips & Itineraries CRUD completed with indexes.  
+- **M2**: Flights & Itineraries CRUD completed with indexes.  
 - **M3**: Expenses & Budget with summaries and alerts.  
 - **M4**: Bookings search proxy & save; receipts storage.  
 - **M5**: Local Businesses search + saved lists.  

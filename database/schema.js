@@ -72,7 +72,7 @@ const scheduleSchema = new mongoose.Schema({
     locations: [scheduleLocationSchema]
 });
 
-const flightSchema = new mongoose.Schema({
+const itineraryFlightSchema = new mongoose.Schema({
     departure_token: { type: String }
 });
 
@@ -87,7 +87,7 @@ const userItinerarySchema = new mongoose.Schema({
     city: { type: String, required: true },
     description: { type: String },
     img: { type: String },
-    flight: flightSchema,
+    flight: itineraryFlightSchema,
     schedules: [scheduleSchema],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
@@ -109,7 +109,7 @@ const userSchema = new mongoose.Schema({
 
 // ...existing code...
 
-// Flight Detail Schema (for Trip.flights)
+// Flight Detail Schema (Flight.flights)
 const flightDetailSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     departure_date: { type: Date, required: true },
@@ -125,7 +125,8 @@ const flightDetailSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-const tripSchema = new mongoose.Schema({
+// Replacing Trip schema with Flight schema (renamed model)
+const flightSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     destination: { type: locationSchema, required: true },
@@ -139,7 +140,7 @@ const tripSchema = new mongoose.Schema({
 });
 
 const itinerarySchema = new mongoose.Schema({
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     title: { type: String, required: true },
     items: [itineraryItemSchema],
     notes: { type: String },
@@ -148,7 +149,7 @@ const itinerarySchema = new mongoose.Schema({
 });
 
 const expenseSchema = new mongoose.Schema({
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     category: { type: String, enum: ['food', 'transport', 'lodging', 'tickets', 'other'], required: true },
     amount: { type: Number, required: true },
@@ -162,7 +163,7 @@ const expenseSchema = new mongoose.Schema({
 });
 
 const budgetSchema = new mongoose.Schema({
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     plannedTotal: { type: Number, required: true },
     alertThresholdPct: { type: Number, default: 80 },
     actualTotal: { type: Number, default: 0 },
@@ -171,7 +172,7 @@ const budgetSchema = new mongoose.Schema({
 
 const budgetAlertSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     type: { type: String, enum: ['overspend', 'warning', 'info'], required: true },
     message: { type: String, required: true },
     thresholdValue: { type: Number },
@@ -180,7 +181,7 @@ const budgetAlertSchema = new mongoose.Schema({
 });
 
 const bookingSchema = new mongoose.Schema({
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     type: { type: String, enum: ['flight', 'hotel', 'car', 'train', 'tour'], required: true },
     provider: { type: String, required: true },
     price: { type: Number, required: true },
@@ -204,7 +205,7 @@ const businessSchema = new mongoose.Schema({
 
 const savedBusinessSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight', required: true },
     businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true },
     note: { type: String },
     createdAt: { type: Date, default: Date.now }
@@ -212,14 +213,14 @@ const savedBusinessSchema = new mongoose.Schema({
 
 // Indexes
 // userSchema.index({ email: 1 }); // Removed: unique: true already creates this index
-tripSchema.index({ userId: 1, startDate: 1 });
-tripSchema.index({ 'flights.user_id': 1 });
-itinerarySchema.index({ tripId: 1 });
-expenseSchema.index({ tripId: 1, date: 1 });
+flightSchema.index({ userId: 1, startDate: 1 });
+flightSchema.index({ 'flights.user_id': 1 });
+itinerarySchema.index({ flightId: 1 });
+expenseSchema.index({ flightId: 1, date: 1 });
 expenseSchema.index({ userId: 1, date: 1 });
 budgetAlertSchema.index({ userId: 1, createdAt: 1 });
-bookingSchema.index({ tripId: 1, type: 1 });
-savedBusinessSchema.index({ userId: 1, tripId: 1, businessId: 1 }, { unique: true });
+bookingSchema.index({ flightId: 1, type: 1 });
+savedBusinessSchema.index({ userId: 1, flightId: 1, businessId: 1 }, { unique: true });
 businessSchema.index({ name: 'text', tags: 'text' });
 
 // Emergency Contact Index
@@ -230,7 +231,8 @@ userItinerarySchema.index({ user_id: 1 });
 
 // Models
 const User = mongoose.model('User', userSchema);
-const Trip = mongoose.model('Trip', tripSchema);
+// Create Flight model to replace Trip model
+const Flight = mongoose.model('Flight', flightSchema);
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
 const Expense = mongoose.model('Expense', expenseSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
@@ -244,7 +246,7 @@ const UserItinerary = mongoose.models.UserItinerary || mongoose.model('UserItine
 // Export models
 module.exports = {
     User,
-    Trip,
+    Flight,
     Itinerary,
     Expense,
     Budget,

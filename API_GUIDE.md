@@ -989,13 +989,13 @@ async function deleteItinerary(email, itineraryId) {
 // Usage: await deleteItinerary('user@example.com', 'itinerary_id');
 ```
 
-### 14. Add Flight to Trip
+### 14. Add Flight Detail to Flight document
 
 
-**Description:** Add flight booking details to a trip belonging to a user.
+**Description:** Add flight booking details to a Flight document belonging to a user.
 
 **URL Parameters:**
-- `tripId` (string, required) - Trip ID
+- `flightId` (string, required) - Flight ID
 
 **Body Parameters:**
 - `email` (string, required) - User's email for authentication (or `userId` may be provided as an alternative)
@@ -1038,14 +1038,14 @@ async function deleteItinerary(email, itineraryId) {
   "success": false,
   "error": "Validation failed",
   "details": ["departure_date is required"]
-  "error": "Trip not found"
+  "error": "Flight not found"
 }
 
 **JavaScript Example:**
 ```javascript
-async function addFlightToTrip(tripId, email, flightData) {
+async function addFlightToFlight(flightId, email, flightData) {
   try {
-    const response = await fetch(`https://travelwise-server.vercel.app/api/trips/${tripId}/flights`, {
+    const response = await fetch(`https://travelwise-server.vercel.app/api/flights/${flightId}/flights`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, ...flightData })
@@ -1059,12 +1059,12 @@ async function addFlightToTrip(tripId, email, flightData) {
 
 **Using userId instead of email (PowerShell example):**
 ```powershell
-Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/trips/<tripId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
+Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flightId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
 ```
 
-#### Flight Schema (Trip.flights)
+#### Flight Schema (Flight.flights)
 
-Flights in the Trip model are embedded objects in the `flights` array on a `Trip` document: `trip.flights`.
+Flights in the Flight model are embedded objects in the `flights` array on a `Flight` document: `flight.flights`.
 Here is the schema and constraints used by the backend (fields, types, and validation rules):
 
 - `user_id` (ObjectId): Reference to the User who added the flight. This value is set automatically based on `email` or `userId` provided on requests.
@@ -1114,29 +1114,29 @@ Example Flight Object (response portion):
 
 #### Functions & Usage Patterns
 
-1. Add Flight — `POST /api/trips/:tripId/flights` (already documented above)
-- Use this to attach a flight to a trip. It validates ownership (via `email` or `userId`) and writes a new flight object to the `trip.flights` array.
+1. Add Flight — `POST /api/flights/:flightId/flights` (already documented above)
+-- Use this to attach a flight booking detail to a Flight document. It validates ownership (via `email` or `userId`) and writes a new flight object to the `flight.flights` array.
 
-2. List Flights — `POST /api/trips/:tripId/flights/list` (already documented above):
-- Returns an array of flights for the trip (empty array if no flights).
+2. List Flights — `POST /api/flights/:flightId/flights/list` (already documented above):
+- Returns an array of flight details for the Flight document (empty array if none).
 
-3. Update Flight — `PUT /api/trips/:tripId/flights/:flightId` (already documented above):
+3. Update Flight — `POST /api/flights/:flightId/flights/update/:detailId` (already documented above):
 - Use to patch/update any subset of the flight fields except `user_id` (ownership must match). Ensure `departure_date` and `return_date` are still valid if updated.
 
-4. Delete Flight — `DELETE /api/trips/:tripId/flights/:flightId` (already documented above):
-- Removes the flight embedded document from the `trip.flights` array (ownership check via `email` or `userId`).
+4. Delete Flight — `POST /api/flights/:flightId/flights/delete/:detailId` (already documented above):
+-- Removes the flight embedded document from the `flight.flights` array (ownership check via `email` or `userId`).
 
 ---
 ---
 
-### List Flights for Trip
+### List Flights for Flight
 
-**POST** `https://travelwise-server.vercel.app/api/trips/:tripId/flights/list`
+**POST** `https://travelwise-server.vercel.app/api/flights/:flightId/flights/list`
 
-**Description:** Retrieve the list of flights for a trip belonging to a user.
+**Description:** Retrieve the list of flight details for a Flight document belonging to a user.
 
 **URL Parameters:**
-- `tripId` (string, required) - Trip ID
+- `flightId` (string, required) - Flight ID
 
 - `email` (string, required unless `userId` provided) - User's email for ownership verification
 - `userId` (string, optional) - Alternative to `email` (ObjectId of user)
@@ -1147,7 +1147,7 @@ Example Flight Object (response portion):
 {
 }
 ```
-async function listFlights(tripId, email) {
+async function listFlights(flightId, email) {
   try {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1162,7 +1162,7 @@ async function listFlights(tripId, email) {
 
 **Using userId in PowerShell:**
 ```powershell
-Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/trips/<tripId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
+Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flightId>/flights/list" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>"}'
 
 ---
 

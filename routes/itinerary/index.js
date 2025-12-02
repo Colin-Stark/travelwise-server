@@ -40,6 +40,43 @@ router.get('/', async (req, res) => {
     }
 });
 
+// POST /itinerary/list - POST-only retrieval for listing itineraries
+router.post('/list', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Validation failed",
+                details: ["Email is required"]
+            });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const itineraries = await UserItinerary.find({ user_id: user._id });
+
+        res.status(200).json({
+            success: true,
+            data: itineraries
+        });
+
+    } catch (error) {
+        console.error('Error listing itineraries:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
 // POST /itinerary - Create a new itinerary
 router.post('/', async (req, res) => {
     try {
@@ -109,8 +146,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// GET /itinerary/:id - Get a specific itinerary
-router.get('/:id', async (req, res) => {
+// POST /itinerary/get/:id - POST-only retrieval for a specific itinerary
+router.post('/get/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { email } = req.body;
@@ -154,8 +191,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// PUT /itinerary/:id - Update an itinerary
-router.put('/:id', async (req, res) => {
+// POST /itinerary/update/:id - POST-only update endpoint for itineraries
+router.post('/update/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { email, title, start_date, end_date, country, city, description, img, flight, schedules } = req.body;
@@ -227,8 +264,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /itinerary/:id - Delete an itinerary
-router.delete('/:id', async (req, res) => {
+// POST /itinerary/delete/:id - POST-only delete endpoint for itineraries
+router.post('/delete/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { email } = req.body;

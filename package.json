@@ -24,7 +24,8 @@
     "start": "node --watch index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest"
+    "test": "jest",
+    "migrate:trips-to-flights": "node scripts/migrate/trips-to-flights.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

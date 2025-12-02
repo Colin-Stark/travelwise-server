@@ -4,7 +4,7 @@ A comprehensive backend API for TravelWise, a travel planning and expense tracki
 
 ## 🚀 Overview
 
-TravelWise is a full-featured travel management platform that helps users plan trips, track expenses, manage itineraries, and discover local businesses. This backend API provides all the necessary endpoints to power the TravelWise mobile and web applications.
+TravelWise is a full-featured travel management platform that helps users plan trips and flights, track expenses, manage itineraries, and discover local businesses. This backend API provides all the necessary endpoints to power the TravelWise mobile and web applications.
 
 ## ✨ Features
 
@@ -13,13 +13,13 @@ TravelWise is a full-featured travel management platform that helps users plan t
 - Password hashing with bcrypt
 - User profile management with preferences (currency, language, timezone)
 
-### ✈️ Trip Management
-- Create, update, and delete trips
-- Trip status tracking (planned, active, completed, canceled)
+### ✈️ Flight Management
+- Create, update, and delete flights (top-level flight documents)
+- Flight status tracking (planned, active, completed, canceled)
 - Destination management with location data
 
 ### 📅 Itinerary Planning
-- Create detailed itineraries for each trip
+-- Create detailed itineraries for each flight (trip container)
 - Add activities, transportation, lodging, food, and notes
 - Time-based scheduling with start/end times
 - Cost tracking per itinerary item
@@ -38,7 +38,7 @@ TravelWise is a full-featured travel management platform that helps users plan t
 
 ### 🏪 Local Business Discovery
 - Search local businesses (restaurants, attractions, shops, services)
-- Save businesses to trips
+-- Save businesses to flights
 - Business ratings and contact information
 - Location-based search
 
@@ -109,22 +109,22 @@ https://travelwise-server.vercel.app/
 | POST | `/signup` | User registration |
 | POST | `/login` | User login |
 
-### Trip Management
+### Flight Management
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/trips` | Get all user trips |
-| POST | `/trips` | Create a new trip |
-| GET | `/trips/:id` | Get trip by ID |
-| PATCH | `/trips/:id` | Update trip |
-| DELETE | `/trips/:id` | Delete trip |
+| POST | `/flights` | Create a new flight (formerly trip)
+| POST | `/flights/list` | List flights (filter by userId/email)
+| POST | `/flights/get/:id` | Get flight by ID
+| POST | `/flights/update/:id` | Update flight
+| POST | `/flights/delete/:id` | Delete flight
 
 ### Itinerary Management
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/trips/:id/itineraries` | Get trip itineraries |
-| POST | `/trips/:id/itineraries` | Create itinerary |
+| POST | `/flights/:id/itineraries` | Get flight itineraries |
+| POST | `/flights/:id/itineraries` | Create itinerary |
 | PATCH | `/itineraries/:id` | Update itinerary |
 | DELETE | `/itineraries/:id` | Delete itinerary |
 
@@ -132,27 +132,27 @@ https://travelwise-server.vercel.app/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/trips/:id/expenses` | Get trip expenses |
-| POST | `/trips/:id/expenses` | Add expense |
+| POST | `/flights/:id/expenses` | Get flight expenses |
+| POST | `/flights/:id/expenses` | Add expense |
 | PATCH | `/expenses/:id` | Update expense |
 | DELETE | `/expenses/:id` | Delete expense |
-| GET | `/trips/:id/expenses/summary` | Get expense summary |
+| POST | `/flights/:id/expenses/summary` | Get expense summary |
 
 ### Budget Management
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/trips/:id/budget` | Get trip budget |
-| PUT | `/trips/:id/budget` | Set/update budget |
-| GET | `/trips/:id/budget/alerts` | Get budget alerts |
+| POST | `/flights/:id/budget` | Get flight budget |
+| POST | `/flights/:id/budget` | Set/update budget |
+| POST | `/flights/:id/budget/alerts` | Get budget alerts |
 
 ### Local Businesses
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/businesses/search` | Search businesses |
-| POST | `/trips/:id/saved-businesses` | Save business to trip |
-| GET | `/trips/:id/saved-businesses` | Get saved businesses |
+| POST | `/flights/:id/saved-businesses` | Save business to flight |
+| POST | `/flights/:id/saved-businesses` | Get saved businesses |
 | DELETE | `/saved-businesses/:id` | Remove saved business |
 
 ## 🗄️ Database Schema
@@ -160,8 +160,8 @@ https://travelwise-server.vercel.app/
 ### Core Collections
 
 - **Users**: User accounts with authentication and preferences
-- **Trips**: Trip information with destinations and dates
-- **Itineraries**: Detailed trip schedules and activities
+-- **Flights**: Flight (trip container) information with destinations and dates
+-- **Itineraries**: Detailed flight schedules and activities
 - **Expenses**: Expense tracking with categories and amounts
 - **Budgets**: Budget management with alerts
 - **Bookings**: Travel bookings and reservations
@@ -170,10 +170,10 @@ https://travelwise-server.vercel.app/
 
 ### Key Relationships
 
-- User → Trips (1:N)
-- Trip → Itineraries (1:N)
-- Trip → Expenses (1:N)
-- Trip → Budget (1:1)
+- User → Flights (1:N)
+-- Flight → Itineraries (1:N)
+-- Flight → Expenses (1:N)
+-- Flight → Budget (1:1)
 - User → Saved Businesses (M:N via junction table)
 
 ## 🔧 Development

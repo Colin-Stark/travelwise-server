@@ -11,7 +11,7 @@ const signupRouter = require('./routes/signup');
 const loginRouter = require('./routes/login');
 const userManagementRouter = require('./routes/userManagement');
 const itineraryRouter = require('./routes/itinerary');
-const tripRouter = require('./routes/trip');
+const flightRouter = require('./routes/flight');
 
 /**
  * MIDDLEWARES
@@ -39,14 +39,12 @@ app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/userManagement', userManagementRouter);
 app.use('/api/itineraries', itineraryRouter);
-app.use('/api/trips', tripRouter);
+app.use('/api/flights', flightRouter);
 
 
 const connectDB = async () => {
     try {
         await mongoose.connect(MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 30000,
             connectTimeoutMS: 30000
         });

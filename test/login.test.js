@@ -12,8 +12,8 @@ describe('POST /login', () => {
             .post('/signup')
             .send({
                 email: 'collinscodes@gmail.com',
-                password: 'Password123!',
-                confirmPassword: 'Password123!'
+                password: 'BackendDev',
+                confirmPassword: 'BackendDev'
             });
     });
 

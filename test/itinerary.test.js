@@ -32,7 +32,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should create a new itinerary', async () => {
         const res = await request(app)
-            .post('/itinerary')
+            .post('/api/itineraries')
             .send({
                 email: testEmail,
                 title: 'Paris Adventure',
@@ -84,7 +84,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should get all itineraries for user', async () => {
         const res = await request(app)
-            .get('/itinerary')
+            .post('/api/itineraries/list')
             .send({ email: testEmail });
 
         expect(res.statusCode).toBe(200);
@@ -98,7 +98,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should get a specific itinerary', async () => {
         const res = await request(app)
-            .get(`/itinerary/${testItineraryId}`)
+            .post(`/api/itineraries/get/${testItineraryId}`)
             .send({ email: testEmail });
 
         expect(res.statusCode).toBe(200);
@@ -112,7 +112,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should update an itinerary', async () => {
         const res = await request(app)
-            .put(`/itinerary/${testItineraryId}`)
+            .post(`/api/itineraries/update/${testItineraryId}`)
             .send({
                 email: testEmail,
                 title: 'Updated Paris Adventure',
@@ -130,7 +130,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should delete an itinerary', async () => {
         const res = await request(app)
-            .delete(`/itinerary/${testItineraryId}`)
+            .post(`/api/itineraries/delete/${testItineraryId}`)
             .send({ email: testEmail });
 
         expect(res.statusCode).toBe(200);
@@ -143,7 +143,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should return 404 for deleted itinerary', async () => {
         const res = await request(app)
-            .get(`/itinerary/${testItineraryId}`)
+            .post(`/api/itineraries/get/${testItineraryId}`)
             .send({ email: testEmail });
 
         expect(res.statusCode).toBe(404);
@@ -156,7 +156,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should fail if required fields are missing', async () => {
         const res = await request(app)
-            .post('/itinerary')
+            .post('/api/itineraries')
             .send({
                 email: testEmail,
                 title: 'Test Itinerary'
@@ -173,7 +173,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should fail if email is missing', async () => {
         const res = await request(app)
-            .get('/itinerary')
+            .post('/api/itineraries/list')
             .send({});
 
         expect(res.statusCode).toBe(400);
@@ -186,7 +186,7 @@ describe('Itinerary CRUD Operations', () => {
      */
     it('should fail if user does not exist', async () => {
         const res = await request(app)
-            .get('/itinerary/someid')
+            .post('/api/itineraries/get/someid')
             .send({ email: 'nonexistent@example.com' });
 
         expect(res.statusCode).toBe(404);
