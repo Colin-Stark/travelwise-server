@@ -139,6 +139,72 @@ async function addFlightToTrip(tripId, email, flightData) {
 ```powershell
 Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/trips/<tripId>/flights" -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{"userId":"<userId>", "departure_date":"2025-12-01", "return_date":"2025-12-05", "departure_country":"Canada", "departure_city":"Toronto", "arrival_country":"France", "arrival_city":"Paris", "price":500 }'
 ```
+
+#### Flight Schema (Trip.flights)
+
+Flights in the Trip model are embedded objects in the `flights` array on a `Trip` document: `trip.flights`.
+Here is the schema and constraints used by the backend (fields, types, and validation rules):
+
+- `user_id` (ObjectId): Reference to the User who added the flight. This value is set automatically based on `email` or `userId` provided on requests.
+- `departure_date` (Date, required): Start of the flight range; ISO string (YYYY-MM-DD) accepted. Must be < `return_date`.
+- `return_date` (Date, required): End of the flight range; ISO string accepted.
+- `departure_country` (String, required)
+- `departure_city` (String, required)
+- `arrival_country` (String, required)
+- `arrival_city` (String, required)
+- `departure_token` (String, optional): A provider or display token for the flight booking (e.g., supplier reference, tokenized booking id).
+- `price` (Number, required): Price of the flight. Backend validation requires a non-negative number (>= 0).
+- `status` (String, enum, default `booked`): Allowed: `booked`, `pending`, `cancelled`.
+- `createdAt` (Date): Flight creation timestamp.
+- `updatedAt` (Date): Flight update timestamp.
+
+Validation rules enforced by the API:
+- `departure_date` and `return_date` are required and `return_date` must be after `departure_date`.
+- `price` must be a number >= 0.
+- Fields marked required must be present or the API returns `400 Validation failed`.
+
+Where the field values come from:
+- `user_id` is derived from the authenticated/identified user you send in the body (`email` or `userId`).
+- Timestamps are set by the server.
+
+When to use a `departure_token`:
+- This field is free-form text for supplier or booking tokens; it helps with lookups and idempotency if you store a provider booking reference. The API does not currently validate the format; it stores and returns the token as-is.
+
+Example Flight Object (response portion):
+```json
+{
+  "user_id": "692e469f99e5dfc1747b9dfb",
+  "departure_date": "2025-12-01T00:00:00.000Z",
+  "return_date": "2025-12-05T00:00:00.000Z",
+  "departure_country": "Canada",
+  "departure_city": "Toronto",
+  "arrival_country": "France",
+  "arrival_city": "Paris",
+  "departure_token": "token123",
+  "price": 500,
+  "status": "booked",
+  "createdAt": "2025-11-11T00:00:00.000Z",
+  "updatedAt": "2025-11-11T00:00:00.000Z"
+}
+```
+
+---
+
+#### Functions & Usage Patterns
+
+1. Add Flight — `POST /api/trips/:tripId/flights` (already documented above)
+- Use this to attach a flight to a trip. It validates ownership (via `email` or `userId`) and writes a new flight object to the `trip.flights` array.
+
+2. List Flights — `POST /api/trips/:tripId/flights/list` (already documented above):
+- Returns an array of flights for the trip (empty array if no flights).
+
+3. Update Flight — `PUT /api/trips/:tripId/flights/:flightId` (already documented above):
+- Use to patch/update any subset of the flight fields except `user_id` (ownership must match). Ensure `departure_date` and `return_date` are still valid if updated.
+
+4. Delete Flight — `DELETE /api/trips/:tripId/flights/:flightId` (already documented above):
+- Removes the flight embedded document from the `trip.flights` array (ownership check via `email` or `userId`).
+
+---
 ---
 
 ### List Flights for Trip
