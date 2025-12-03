@@ -192,6 +192,22 @@ const bookingSchema = new mongoose.Schema({
     voucherUrl: { type: String }
 });
 
+// Hotel Schema
+const hotelSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    check_in_date: { type: Date, required: true },
+    check_out_date: { type: Date, required: true },
+    property_token: { type: String },
+    price: { type: Number, required: true, min: 0 },
+    latitude: { type: Number },
+    longitude: { type: Number },
+    country: { type: String, required: true },
+    city: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 // ...existing code...
 
 const businessSchema = new mongoose.Schema({
@@ -229,11 +245,16 @@ emergencyContactSchema.index({ userId: 1 });
 // User Itinerary Index
 userItinerarySchema.index({ user_id: 1 });
 
+// Hotel Indexes
+hotelSchema.index({ userId: 1, check_in_date: 1 });
+hotelSchema.index({ country: 1, city: 1 });
+
 // Models
 const User = mongoose.model('User', userSchema);
 // Create Flight model to replace Trip model
 const Flight = mongoose.model('Flight', flightSchema);
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
+const Hotel = mongoose.model('Hotel', hotelSchema);
 const Expense = mongoose.model('Expense', expenseSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const BudgetAlert = mongoose.model('BudgetAlert', budgetAlertSchema);
@@ -248,6 +269,7 @@ module.exports = {
     User,
     Flight,
     Itinerary,
+    Hotel,
     Expense,
     Budget,
     BudgetAlert,

@@ -1302,6 +1302,109 @@ Cannot POST /login/forgot-passoword
 
 ---
 
+### Hotels API
+
+**Base:** `https://travelwise-server.vercel.app/api/hotels`
+
+#### Create Hotel Booking
+
+**POST** `/api/hotels`
+
+**Description:** Create a hotel booking for a user. The API uses POST-only endpoints and accepts either an `email` or `userId` for authentication.
+
+**Body Parameters:**
+- `email` (string, required unless `userId` provided) - User's email for authentication
+- `name` (string, required) - Hotel name
+- `check_in_date` (string, required) - Check-in date in YYYY-MM-DD format
+- `check_out_date` (string, required) - Check-out date in YYYY-MM-DD format
+- `property_token` (string, optional) - Provider token or booking reference
+- `price` (number, required) - Price of the stay (>= 0)
+- `latitude` (number, optional)
+- `longitude` (number, optional)
+- `country` (string, required)
+- `city` (string, required)
+
+**Success Response:**
+- Status: `201 Created`
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "hotelId",
+    "userId": "userId",
+    "name": "HOTEL GRAPHY NEZU",
+    "check_in_date": "2025-11-25T00:00:00.000Z",
+    "check_out_date": "2025-11-29T00:00:00.000Z",
+    "property_token": "ChgI4MyEhJ_t7sJgGgwvZy8xMnFnanR5aG4QAQ",
+    "price": 148,
+    "latitude": 34.213112,
+    "longitude": -79.1231131,
+    "country": "Japan",
+    "city": "Tokyo",
+    "createdAt": "2025-11-20T12:00:00.000Z",
+    "updatedAt": "2025-11-20T12:00:00.000Z"
+  }
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function createHotel(email, hotelData) {
+  try {
+    const response = await fetch('https://travelwise-server.vercel.app/api/hotels', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, ...hotelData })
+    });
+    return await response.json();
+  } catch (err) {
+    console.error('Create hotel error', err);
+  }
+}
+// Usage:
+// await createHotel('jojus.stpeter@gmail.com', { name: 'HOTEL GRAPHY NEZU', check_in_date: '2025-11-25', check_out_date: '2025-11-29', property_token: '...', price: 148, latitude: 34.213112, longitude: -79.1231131, country: 'Japan', city: 'Tokyo' });
+```
+
+**Using PowerShell:**
+```powershell
+Invoke-RestMethod -Uri 'https://travelwise-server.vercel.app/api/hotels' -Method Post -Headers @{ 'Content-Type' = 'application/json' } -Body '{
+  "email":"jojus.stpeter@gmail.com",
+  "name":"HOTEL GRAPHY NEZU",
+  "check_in_date":"2025-11-25",
+  "check_out_date":"2025-11-29",
+  "property_token":"ChgI4MyEhJ_t7sJgGgwvZy8xMnFnanR5aG4QAQ",
+  "price":148,
+  "latitude":34.213112,
+  "longitude":-79.1231131,
+  "country":"Japan",
+  "city":"Tokyo"
+}'
+```
+
+#### List Hotels for User
+
+**POST** `/api/hotels/list`
+
+**Description:** List all hotel bookings for a user. Provide `email` in body.
+
+**Body:** `{ "email": "user@example.com" }`
+
+**JavaScript Example:**
+```javascript
+async function listHotels(email) {
+  const res = await fetch('https://travelwise-server.vercel.app/api/hotels/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+  return await res.json();
+}
+```
+
+#### Get / Update / Delete
+
+- `POST /api/hotels/get/:id` — get a single booking (body: `email` or `userId`).
+- `POST /api/hotels/update/:id` — update booking fields (body: `email`/`userId` + fields to update).
+- `POST /api/hotels/delete/:id` — delete a booking (body: `email` or `userId`).
+
+Follow the same success/error response patterns as other endpoints (400 validation, 404 not found, 500 server error).
+
 ## Tips
 
 - Always check for typos in route paths.

@@ -12,6 +12,7 @@ const loginRouter = require('./routes/login');
 const userManagementRouter = require('./routes/userManagement');
 const itineraryRouter = require('./routes/itinerary');
 const flightRouter = require('./routes/flight');
+const hotelRouter = require('./routes/hotel');
 
 /**
  * MIDDLEWARES
@@ -40,6 +41,7 @@ app.use('/login', loginRouter);
 app.use('/userManagement', userManagementRouter);
 app.use('/api/itineraries', itineraryRouter);
 app.use('/api/flights', flightRouter);
+app.use('/api/hotels', hotelRouter);
 
 
 const connectDB = async () => {
