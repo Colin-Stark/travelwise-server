@@ -103,7 +103,6 @@ router.post('/', async (req, res) => {
 
         // Validate schedules locations for travel_time, travel_mode, price
         if (schedules && Array.isArray(schedules)) {
-            const allowedModes = ['walk', 'drive', 'transit', 'bike', 'other'];
             for (let i = 0; i < schedules.length; i++) {
                 const locs = schedules[i].locations || [];
                 for (let j = 0; j < locs.length; j++) {
@@ -122,12 +121,8 @@ router.post('/', async (req, res) => {
                         }
                         loc.price = p;
                     }
-                    if (loc.travel_mode) {
-                        const mode = String(loc.travel_mode);
-                        if (!allowedModes.includes(mode)) {
-                            return res.status(400).json({ success: false, error: 'Validation failed', details: [`schedules.locations.travel_mode must be one of: ${allowedModes.join(', ')}`] });
-                        }
-                        loc.travel_mode = mode;
+                    if (loc.travel_mode !== undefined && loc.travel_mode !== null) {
+                        loc.travel_mode = String(loc.travel_mode);
                     }
                 }
             }
@@ -267,7 +262,6 @@ router.post('/update/:id', async (req, res) => {
 
         // Validate schedules locations for travel_time, travel_mode, price when updating
         if (schedules && Array.isArray(schedules)) {
-            const allowedModes = ['walk', 'drive', 'transit', 'bike', 'other'];
             for (let i = 0; i < schedules.length; i++) {
                 const locs = schedules[i].locations || [];
                 for (let j = 0; j < locs.length; j++) {
@@ -286,12 +280,8 @@ router.post('/update/:id', async (req, res) => {
                         }
                         loc.price = p;
                     }
-                    if (loc.travel_mode) {
-                        const mode = String(loc.travel_mode);
-                        if (!allowedModes.includes(mode)) {
-                            return res.status(400).json({ success: false, error: 'Validation failed', details: [`schedules.locations.travel_mode must be one of: ${allowedModes.join(', ')}`] });
-                        }
-                        loc.travel_mode = mode;
+                    if (loc.travel_mode !== undefined && loc.travel_mode !== null) {
+                        loc.travel_mode = String(loc.travel_mode);
                     }
                 }
             }

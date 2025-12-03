@@ -66,7 +66,7 @@ const scheduleLocationSchema = new mongoose.Schema({
     time: { type: String },
     duration: { type: Number },
     travel_time: { type: Number, min: 0 },
-    travel_mode: { type: String, enum: ['walk', 'drive', 'transit', 'bike', 'other'] },
+    travel_mode: { type: String },
     price: { type: Number, min: 0 }
 });
 
