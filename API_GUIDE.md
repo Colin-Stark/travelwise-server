@@ -626,6 +626,9 @@ async function updateUser(email, updates) {
     - `serpapi_thumbnail` (string, optional) - SerpAPI thumbnail
     - `time` (string, optional) - Scheduled time
     - `duration` (number, optional) - Duration in minutes
+    - `travel_time` (number, optional) - Travel time in minutes to this location (non-negative)
+    - `travel_mode` (string, optional) - Mode of travel to this location. One of: `walk`, `drive`, `transit`, `bike`, `other`.
+    - `price` (number, optional) - Estimated cost associated with this location or transfer (non-negative)
 - `gl` (string, optional) - Geographic location code (e.g., 'jp' for Japan)
 
 **Success Response:**
@@ -672,7 +675,10 @@ async function updateUser(email, updates) {
             "thumbnail": "https://lh3.googleusercontent.com/...",
             "serpapi_thumbnail": "https://serpapi.com/...",
             "time": "8:30 AM",
-            "duration": 90
+            "duration": 90,
+            "travel_time": 15,
+            "travel_mode": "walk",
+            "price": 0
           }
         ]
       }
@@ -897,6 +903,7 @@ async function getItinerary(email, itineraryId) {
 - `flight` (object, optional) - Updated flight details
 - `schedules` (array, optional) - Updated schedules
 - `gl` (string, optional) - Updated geographic location code
+  - Note: `schedules[].locations[]` may include `travel_time`, `travel_mode`, and `price` as documented in the Create Itinerary section.
 
 **Success Response:**
 - Status: `200 OK`

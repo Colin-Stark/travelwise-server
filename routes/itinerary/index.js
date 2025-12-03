@@ -101,6 +101,38 @@ router.post('/', async (req, res) => {
             if (hotel.property_token) hotel.property_token = String(hotel.property_token);
         }
 
+        // Validate schedules locations for travel_time, travel_mode, price
+        if (schedules && Array.isArray(schedules)) {
+            const allowedModes = ['walk', 'drive', 'transit', 'bike', 'other'];
+            for (let i = 0; i < schedules.length; i++) {
+                const locs = schedules[i].locations || [];
+                for (let j = 0; j < locs.length; j++) {
+                    const loc = locs[j];
+                    if (loc.travel_time !== undefined && loc.travel_time !== null) {
+                        const tt = Number(loc.travel_time);
+                        if (Number.isNaN(tt) || tt < 0) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: ['schedules.locations.travel_time must be a non-negative number'] });
+                        }
+                        loc.travel_time = tt;
+                    }
+                    if (loc.price !== undefined && loc.price !== null) {
+                        const p = Number(loc.price);
+                        if (Number.isNaN(p) || p < 0) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: ['schedules.locations.price must be a non-negative number'] });
+                        }
+                        loc.price = p;
+                    }
+                    if (loc.travel_mode) {
+                        const mode = String(loc.travel_mode);
+                        if (!allowedModes.includes(mode)) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: [`schedules.locations.travel_mode must be one of: ${allowedModes.join(', ')}`] });
+                        }
+                        loc.travel_mode = mode;
+                    }
+                }
+            }
+        }
+
         const newItinerary = new UserItinerary({
             user_id: user._id,
             id: Date.now(),
@@ -231,6 +263,38 @@ router.post('/update/:id', async (req, res) => {
                 hotel.price = hp;
             }
             if (hotel.property_token) hotel.property_token = String(hotel.property_token);
+        }
+
+        // Validate schedules locations for travel_time, travel_mode, price when updating
+        if (schedules && Array.isArray(schedules)) {
+            const allowedModes = ['walk', 'drive', 'transit', 'bike', 'other'];
+            for (let i = 0; i < schedules.length; i++) {
+                const locs = schedules[i].locations || [];
+                for (let j = 0; j < locs.length; j++) {
+                    const loc = locs[j];
+                    if (loc.travel_time !== undefined && loc.travel_time !== null) {
+                        const tt = Number(loc.travel_time);
+                        if (Number.isNaN(tt) || tt < 0) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: ['schedules.locations.travel_time must be a non-negative number'] });
+                        }
+                        loc.travel_time = tt;
+                    }
+                    if (loc.price !== undefined && loc.price !== null) {
+                        const p = Number(loc.price);
+                        if (Number.isNaN(p) || p < 0) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: ['schedules.locations.price must be a non-negative number'] });
+                        }
+                        loc.price = p;
+                    }
+                    if (loc.travel_mode) {
+                        const mode = String(loc.travel_mode);
+                        if (!allowedModes.includes(mode)) {
+                            return res.status(400).json({ success: false, error: 'Validation failed', details: [`schedules.locations.travel_mode must be one of: ${allowedModes.join(', ')}`] });
+                        }
+                        loc.travel_mode = mode;
+                    }
+                }
+            }
         }
 
         const updatedItinerary = await UserItinerary.findOneAndUpdate(

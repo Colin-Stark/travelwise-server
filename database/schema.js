@@ -64,7 +64,10 @@ const scheduleLocationSchema = new mongoose.Schema({
     thumbnail: { type: String },
     serpapi_thumbnail: { type: String },
     time: { type: String },
-    duration: { type: Number }
+    duration: { type: Number },
+    travel_time: { type: Number, min: 0 },
+    travel_mode: { type: String, enum: ['walk', 'drive', 'transit', 'bike', 'other'] },
+    price: { type: Number, min: 0 }
 });
 
 const scheduleSchema = new mongoose.Schema({
