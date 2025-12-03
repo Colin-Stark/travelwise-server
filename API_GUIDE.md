@@ -627,7 +627,7 @@ async function updateUser(email, updates) {
     - `time` (string, optional) - Scheduled time
     - `duration` (number, optional) - Duration in minutes
     - `travel_time` (number, optional) - Travel time in minutes to this location (non-negative)
-    - `travel_mode` (string, optional) - Mode of travel to this location. One of: `walk`, `drive`, `transit`, `bike`, `other`.
+    - `travel_mode` (string, optional) - Mode of travel to this location. Free-form string; the frontend decides allowed values (example: `walk`, `drive`, `transit`).
     - `price` (number, optional) - Estimated cost associated with this location or transfer (non-negative)
 - `gl` (string, optional) - Geographic location code (e.g., 'jp' for Japan)
 
