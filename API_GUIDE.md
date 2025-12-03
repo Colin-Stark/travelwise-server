@@ -1306,7 +1306,7 @@ Invoke-RestMethod -Uri "https://travelwise-server.vercel.app/api/flights/<flight
 
 ```
 Cannot POST /login/forgot-passoword
-```
+
 
 - For all API routes, if required fields are missing or invalid (including invalid email format), you will receive a JSON error response with `success: false` and a descriptive `message`.
 
