@@ -79,6 +79,28 @@ router.post('/', async (req, res) => {
             });
         }
 
+        // Validate optional flight.price if provided
+        if (flight && flight.price !== undefined && flight.price !== null) {
+            const fp = Number(flight.price);
+            if (Number.isNaN(fp) || fp < 0) {
+                return res.status(400).json({ success: false, error: 'Validation failed', details: ['flight.price must be a non-negative number'] });
+            }
+            flight.price = fp;
+        }
+
+        // Validate optional hotel object if provided
+        const hotel = req.body.hotel;
+        if (hotel) {
+            if (hotel.price !== undefined && hotel.price !== null) {
+                const hp = Number(hotel.price);
+                if (Number.isNaN(hp) || hp < 0) {
+                    return res.status(400).json({ success: false, error: 'Validation failed', details: ['hotel.price must be a non-negative number'] });
+                }
+                hotel.price = hp;
+            }
+            if (hotel.property_token) hotel.property_token = String(hotel.property_token);
+        }
+
         const newItinerary = new UserItinerary({
             user_id: user._id,
             id: Date.now(),
@@ -91,6 +113,7 @@ router.post('/', async (req, res) => {
             description,
             img,
             flight,
+            hotel,
             schedules
         });
 
@@ -190,6 +213,26 @@ router.post('/update/:id', async (req, res) => {
             });
         }
 
+        // Validate optional flight.price and hotel values before update
+        if (flight && flight.price !== undefined && flight.price !== null) {
+            const fp = Number(flight.price);
+            if (Number.isNaN(fp) || fp < 0) {
+                return res.status(400).json({ success: false, error: 'Validation failed', details: ['flight.price must be a non-negative number'] });
+            }
+            flight.price = fp;
+        }
+        const hotel = req.body.hotel;
+        if (hotel) {
+            if (hotel.price !== undefined && hotel.price !== null) {
+                const hp = Number(hotel.price);
+                if (Number.isNaN(hp) || hp < 0) {
+                    return res.status(400).json({ success: false, error: 'Validation failed', details: ['hotel.price must be a non-negative number'] });
+                }
+                hotel.price = hp;
+            }
+            if (hotel.property_token) hotel.property_token = String(hotel.property_token);
+        }
+
         const updatedItinerary = await UserItinerary.findOneAndUpdate(
             { _id: id, user_id: user._id },
             {
@@ -202,6 +245,7 @@ router.post('/update/:id', async (req, res) => {
                 description,
                 img,
                 flight,
+                hotel,
                 schedules,
                 updatedAt: new Date()
             },

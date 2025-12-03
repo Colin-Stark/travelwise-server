@@ -73,7 +73,14 @@ const scheduleSchema = new mongoose.Schema({
 });
 
 const itineraryFlightSchema = new mongoose.Schema({
-    departure_token: { type: String }
+    departure_token: { type: String },
+    price: { type: Number, min: 0 }
+});
+
+// Itinerary Hotel Schema: small embedded object on a user itinerary
+const itineraryHotelSchema = new mongoose.Schema({
+    property_token: { type: String },
+    price: { type: Number, min: 0 }
 });
 
 const userItinerarySchema = new mongoose.Schema({
@@ -88,6 +95,7 @@ const userItinerarySchema = new mongoose.Schema({
     description: { type: String },
     img: { type: String },
     flight: itineraryFlightSchema,
+    hotel: itineraryHotelSchema,
     schedules: [scheduleSchema],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }

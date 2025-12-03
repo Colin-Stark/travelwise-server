@@ -604,6 +604,10 @@ async function updateUser(email, updates) {
 - `img` (string, optional) - Image URL
 - `flight` (object, optional) - Flight booking details
   - `departure_token` (string)
+  - `price` (number, optional) - Flight price (non-negative)
+- `hotel` (object, optional) - Hotel booking details for the itinerary
+  - `property_token` (string, optional) - Provider token or booking reference
+  - `price` (number, optional) - Hotel price (non-negative)
 - `schedules` (array, optional) - Daily schedules
   - `day` (string) - Schedule date in YYYY-MM-DD format
   - `locations` (array) - Locations for the day
@@ -642,7 +646,12 @@ async function updateUser(email, updates) {
     "description": "Explore the Eiffel Tower, Louvre, and enjoy French cuisine.",
     "img": "/images/placeholder1.jpg",
     "flight": {
-      "departure_token": "token_string"
+      "departure_token": "token_string",
+      "price": 300
+    },
+    "hotel": {
+      "property_token": "ChgI4MyEhJ_t7sJgGgwvZy8xMnFnanR5aG4QAQ",
+      "price": 148
     },
     "schedules": [
       {
@@ -749,7 +758,8 @@ async function createItinerary(email, itineraryData) {
       "city": "Paris",
       "description": "Explore the Eiffel Tower...",
       "img": "/images/placeholder1.jpg",
-      "flight": { "departure_token": "token" },
+      "flight": { "departure_token": "token", "price": 250 },
+      "hotel": { "property_token": "token_hotel", "price": 120 },
       "schedules": [...],
       "createdAt": "2025-11-11T00:00:00.000Z",
       "updatedAt": "2025-11-11T00:00:00.000Z"
@@ -1324,6 +1334,12 @@ Cannot POST /login/forgot-passoword
 - `country` (string, required)
 - `city` (string, required)
 
+**Validation rules:**
+- Either `email` or `userId` must be provided to identify the user (create accepts both; list accepts `email`).
+- `name`, `check_in_date`, `check_out_date`, `country`, `city`, and `price` are required for creation.
+- `check_in_date` must be before `check_out_date`.
+- `price` must be a non-negative number (>= 0).
+
 **Success Response:**
 - Status: `201 Created`
 ```json
@@ -1347,21 +1363,54 @@ Cannot POST /login/forgot-passoword
 }
 ```
 
+**Error Responses (Create):**
+- Status: `400 Bad Request` — missing required fields or validation failed
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["Email or userId is required", "name is required"]
+}
+```
+- Status: `400 Bad Request` — invalid dates
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["check_out_date must be after check_in_date"]
+}
+```
+- Status: `400 Bad Request` — invalid price
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": ["price must be >= 0"]
+}
+```
+- Status: `404 Not Found` — user not found
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
+
 **JavaScript Example:**
 ```javascript
-async function createHotel(email, hotelData) {
+async function createHotel(emailOrUserId, hotelData) {
   try {
     const response = await fetch('https://travelwise-server.vercel.app/api/hotels', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, ...hotelData })
+      body: JSON.stringify({ email: emailOrUserId, ...hotelData })
     });
     return await response.json();
   } catch (err) {
     console.error('Create hotel error', err);
   }
 }
-// Usage:
+// Usage example: include either `email` or `userId` in the body
 // await createHotel('jojus.stpeter@gmail.com', { name: 'HOTEL GRAPHY NEZU', check_in_date: '2025-11-25', check_out_date: '2025-11-29', property_token: '...', price: 148, latitude: 34.213112, longitude: -79.1231131, country: 'Japan', city: 'Tokyo' });
 ```
 
